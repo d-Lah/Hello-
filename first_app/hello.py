@@ -134,29 +134,3 @@ def user_post_api(user_id):
 @app.route("/", methods=["GET", "POST"])
 def biba():
     return "lalala", 200
-#    title = data['title']
-#    body = data['body']
-#    error = None
-#
-#    if not title:
-#        error = 'Title is required.'
-#    if error is not None:
-#        flash(error)
-#    else:
-#        db = get_db()
-#        db.execute(
-#            'INSERT INTO post (title, body, author_id)'
-#            ' VALUES (?, ?, ?)',
-#            (title, body, author_id)
-#        )
-#        db.commit()
-
-
-#    title = data["title"]
-#    body = data["body"]
-#    db.execute(
-#        'INSERT INTO post (title, body, author_id)'
-#        'VALUES (?, ?, ?)',
-#    (title, body, author_id)
-#    )
-#    db.commit
