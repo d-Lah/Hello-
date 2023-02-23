@@ -1,12 +1,13 @@
 import jwt
-import time
 import os
 import json
+from sqlalchemy.orm import session
 from functools import wraps
 from flask import Flask, request, render_template, flash
 from werkzeug.security import check_password_hash, generate_password_hash
 from . import create_app
 from .db import get_db
+from first_app.models import User
 app = create_app()
 def login_required(f):
     @wraps(f)
@@ -75,20 +76,17 @@ def login_api():
     token_data = {"user_id": user["id"]}
     access_token = jwt.encode(token_data, app.config['SECRET_KEY'], algorithm='HS256')
     return {"access_token": access_token}, 200
+
 @app.route("/api/v1/user-info/<user_id>", methods=['GET','POST'])
 @login_required
 def user_info_api(user_id):
-    db = get_db()
-    user = db.execute(
-    "SELECT * FROM user WHERE id =?",
-    (user_id,),
-    ).fetchone()
-    return{
-        "id": user["id"],
-        "phone_number": user["phone_number"],
-        "first_name": user["first_name"],
-        "second_name": user["second_name"]
-    },200
+    #db = get_db()
+    #user = db.execute(
+    #"SELECT * FROM user WHERE id =?",
+    #(user_id,),
+    #).fetchone()
+    user = User.query.filter(User.id==user_id).one()
+    return {"info": user.user_info()},200
 
 @app.route("/api/v1/create-post/<user_id>", methods=["POST"])
 @login_required
