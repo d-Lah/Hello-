@@ -25,6 +25,7 @@ class Post(Base):
     created = Column(TIMESTAMP())
     body = Column(Text(), unique=False)
     title = Column(Text(), unique=False)
+    deleted = Column(Integer)
     def __init__(self,author_id=None,created=None, title=None, body=None):
         self.author_id = author_id
         self.created = created

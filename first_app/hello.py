@@ -4,7 +4,7 @@ import datetime
 import json
 from sqlalchemy import insert
 from functools import wraps
-from flask import Flask, request, render_template, flash
+from flask import Flask, g, request, render_template, flash
 from werkzeug.security import check_password_hash, generate_password_hash
 from . import create_app
 from .db import get_db, db_session
@@ -14,30 +14,23 @@ def login_required(f):
     @wraps(f)
     def _wrapper(*args,**kwargs):
         
-        user_id = int(kwargs.get("user_id"))
         access_token = request.headers.get("Authorization")
         payload = jwt.decode(access_token, app.config['SECRET_KEY'], algorithms='HS256')
         token_user_id = payload["user_id"]
         
-        if not token_user_id or user_id != token_user_id:
+        if not token_user_id:
             return {"error":"Користувач не авторизований"}, 403
         
         user = User.query.filter(User.id==token_user_id).one()
-        #db = get_db()
-        #user = db.execute(
-        #    "SELECT * FROM user WHERE id = ?",
-        #    (token_user_id,),
-        #).fetchone()
 
         if not user:
-            return {"error": f"Користувач не існує {user_id}"}, 404
-        if int(token_user_id) != user.id:
-            return{"error": "Користувач створює не свій пост"}, 403
+            return {"error": f"Користувач не існує"}, 404
+        g.user_id = token_user_id
         
         return f(*args, **kwargs)
     return _wrapper
     
-@app.route("/api/v1/register-user", methods=['GET','POST'])
+@app.route("/api/v1/register-user", methods=['POST'])
 def registrate_user_api():
     data = request.json
     phone_number = data["phone_number"]
@@ -50,12 +43,6 @@ def registrate_user_api():
                     generate_password_hash(password))
     db_session.add(new_user)
     db_session.commit()
-    #db = get_db()
-    #db.execute(
-    #    "INSERT INTO user (phone_number, first_name, second_name, password) VALUES (?, ?, ?, ?)",
-    #    (phone_number, first_name, second_name, generate_password_hash(password)),
-    #)
-    #db.commit()
     return {}, 200
 
 
@@ -69,11 +56,6 @@ def login_api():
     if not income_phone_number or not income_password:
         return "", 401
 
-    #db = get_db()
-    #user = db.execute(
-    #    "SELECT * FROM user WHERE phone_number = ?",
-    #    (income_phone_number,),
-    #).fetchone()
     if income_phone_number != User.phone_number:
         return{"error":"!"} 
     user = User.query.filter(User.phone_number==income_phone_number).one()
@@ -87,14 +69,11 @@ def login_api():
     access_token = jwt.encode(token_data, app.config['SECRET_KEY'], algorithm='HS256')
     return {"access_token": access_token}, 200
 
-@app.route("/api/v1/user-info/<user_id>", methods=['GET','POST'])
+@app.route("/api/v1/user-info/<int:user_id>", methods=['GET'])
 @login_required
 def user_info_api(user_id):
-    #db = get_db()
-    #user = db.execute(
-    #"SELECT * FROM user WHERE id =?",
-    #(user_id,),
-    #).fetchone()
+    if user_id != g.user_id:
+        return{"error": "Request data isn't yours"}
     user = User.query.filter(User.id==user_id).one()
     return {"info": user.user_info()},200
 
@@ -112,29 +91,19 @@ def create_post_api(user_id):
     if not title:
         error = 'Title is required.'
     if error is not None:
-        flash(error)
+        return {"error": error}
     else:
         new_post = Post(author_id,current_datetime,title,body)
         db_session.add(new_post)
         db_session.commit()
-        #db.execute(
-        #    'INSERT INTO post (title, body, author_id)'
-        #    ' VALUES (?, ?, ?)',
-        #    (title, body, author_id)
-        #)
-        #db.commit()
-
+    
     return "Опубліковано", 200
-@app.route("/api/v1/user-posts/<user_id>", methods=["GET", "POST"])
+@app.route("/api/v1/user-posts/<user_id>", methods=["GET"])
 @login_required
 def user_post_api(user_id):
     db = get_db()
     income_author_id = user_id
     posts_db = Post.query.filter(Post.author_id==income_author_id).all()
-    #post_db = db.execute(
-    #    "SELECT * FROM post WHERE author_id=?",
-    #    (author_id,),
-    #).fetchall()
     posts = []
     for post in posts_db:
         posts.append({
@@ -144,7 +113,7 @@ def user_post_api(user_id):
             "created": post.created
         })
     return posts, 200
-@app.route("/api/v1/delet-post/<user_id>", methods=["GET","POST"])
+@app.route("/api/v1/delet-post/<user_id>", methods=["DELETE"])
 @login_required
 def delet_post_api(user_id):
     data = request.json
@@ -157,7 +126,7 @@ def delet_post_api(user_id):
             return {}, 200
         else:
             return {"error":"error"}
-@app.route("/api/v1/update-post/<user_id>", methods=["GET","POST"])
+@app.route("/api/v1/update-post/<user_id>", methods=["PUT"])
 @login_required
 def update_post_api(user_id):
     data = request.json
