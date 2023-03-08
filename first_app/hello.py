@@ -41,6 +41,8 @@ def registrate_user_api():
     exists = db_session.query(User.query.filter(User.phone_number==phone_number).exists()).scalar()
     if exists:
         return{"error:":"Phone number already exists"}, 400
+    if not phone_number or first_name:
+        return{"error":"Немає номеру телефона, або ім'я "}
     new_user = User(phone_number,
                     first_name,
                     second_name,
@@ -98,6 +100,22 @@ def user_profile_edit(user_id):
                                                 synchronize_session=False)
     db_session.commit()
     return{"return":"ok"}
+@app.route("/api/v1/user-info/change-password/<int:user_id>", methods=['PUT'])
+@login_required
+def change_password(user_id):
+    if user_id != g.user_id:
+        return{"error": "Request data isn't yours"}
+    data = request.json
+    old_password = data["old_password"]
+    new_password = data["new_password"]
+    user = User.query.filter(User.id==user_id).one()
+    if not new_password:
+        return{"error":"Немає нового паролю"}
+    if not check_password_hash(user.password,old_password):
+        return{"error":"pa"}    
+    User.query.filter(User.id==user_id).update({"password":generate_password_hash(new_password)}) 
+    db_session.commit()
+    return{}
 @app.route("/api/v1/create-post/<int:user_id>", methods=["POST"])
 @login_required
 def create_post_api(user_id):
@@ -110,7 +128,7 @@ def create_post_api(user_id):
     body = data['body']
     current_datetime = datetime.datetime.today() 
     if not title or body:    
-        return {"error": "немає title або body"}
+        return {"error": "немає title, або body"}
     else:
         new_post = Post(author_id,current_datetime,title,body)
         db_session.add(new_post)
@@ -142,7 +160,7 @@ def delet_post_api(user_id, post_id):
             db_session.commit()
             return {}, 200
         except: 
-            return{"error":"Невірний user_id або post_id"}    
+            return{"error":"Невірний user_id, або post_id"}    
     else:
         return{"error":"ви пробуєте видалити не свій пост"}
 @app.route("/api/v1/update-post/<int:user_id>/update/<int:post_id>", methods=["PUT"])
@@ -161,6 +179,6 @@ def update_post_api(user_id, post_id):
             db_session.commit()
             return {"return":"onovleno"},200
         except:
-            return {"error": "Невірний user_id або post_id"}
+            return {"error": "Невірний user_id, або post_id"}
     else:
         return{"error":"ви пробуєте оновити не свій пост"}
