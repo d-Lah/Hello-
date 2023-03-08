@@ -20,9 +20,10 @@ def login_required(f):
         
         if not token_user_id:
             return {"error":"Користувач не авторизований"}, 403
-        
-        user = User.query.filter(User.id==token_user_id).one()
-
+        try:
+            user = User.query.filter(User.id==token_user_id).one()
+        except: 
+            return{"error": "Ви запрашуєте не свою інформацію"}
         if not user:
             return {"error": f"Користувач не існує"}, 404
         g.user_id = token_user_id
@@ -37,6 +38,9 @@ def registrate_user_api():
     first_name = data["first_name"]
     second_name = data["second_name"]
     password = data["password"]
+    exists = db_session.query(User.query.filter(User.phone_number==phone_number).exists()).scalar()
+    if exists:
+        return{"error:":"Phone number already exists"}, 400
     new_user = User(phone_number,
                     first_name,
                     second_name,
@@ -55,10 +59,10 @@ def login_api():
 
     if not income_phone_number or not income_password:
         return "", 401
-
-    if income_phone_number != User.phone_number:
-        return{"error":"!"} 
-    user = User.query.filter(User.phone_number==income_phone_number).one()
+    try:    
+        user = User.query.filter(User.phone_number==income_phone_number).one()
+    except:
+        return {"error":"Невірний номер телефону, або пароль"}
     # Перевірка, чи користувач існує
     if not user:
         return {"error": f"Користувач не існує з телефоном {income_phone_number}"}, 404
@@ -76,34 +80,49 @@ def user_info_api(user_id):
         return{"error": "Request data isn't yours"}
     user = User.query.filter(User.id==user_id).one()
     return {"info": user.user_info()},200
-
-@app.route("/api/v1/create-post/<user_id>", methods=["POST"])
+@app.route("/api/v1/user-info/edit/<int:user_id>", methods=['PUT'])
+@login_required
+def user_profile_edit(user_id):
+    if user_id != g.user_id:
+        return{"error": "Request data isn't yours"}
+    data = request.json
+    new_phone_number = data["phone_number"]
+    new_first_name = data["first_name"]
+    new_second_name = data["second_name"]
+    exists = db_session.query(User.query.filter(User.phone_number==new_phone_number).exists()).scalar()
+    if exists:
+        return{"error:":"Phone number already exists"}, 400
+    User.query.filter(User.id==user_id).update({"phone_number":new_phone_number,
+                                                "first_name": new_first_name,
+                                                "second_name":new_second_name},
+                                                synchronize_session=False)
+    db_session.commit()
+    return{"return":"ok"}
+@app.route("/api/v1/create-post/<int:user_id>", methods=["POST"])
 @login_required
 def create_post_api(user_id):
     db = get_db()
     data = request.json
+    if user_id == g.user_id:
+        return{"error":"ви пробуєте створити не у себе пост"}
     author_id = user_id
     title = data['title']
     body = data['body']
     current_datetime = datetime.datetime.today() 
-    error = None
-
-    if not title:
-        error = 'Title is required.'
-    if error is not None:
-        return {"error": error}
+    if not title or body:    
+        return {"error": "немає title або body"}
     else:
         new_post = Post(author_id,current_datetime,title,body)
         db_session.add(new_post)
         db_session.commit()
     
     return "Опубліковано", 200
-@app.route("/api/v1/user-posts/<user_id>", methods=["GET"])
+@app.route("/api/v1/user-posts/<int:user_id>", methods=["GET"])
 @login_required
 def user_post_api(user_id):
     db = get_db()
     income_author_id = user_id
-    posts_db = Post.query.filter(Post.author_id==income_author_id).all()
+    posts_db = Post.query.filter(Post.author_id==income_author_id and Post.deleted==0).all()
     posts = []
     for post in posts_db:
         posts.append({
@@ -113,32 +132,35 @@ def user_post_api(user_id):
             "created": post.created
         })
     return posts, 200
-@app.route("/api/v1/delet-post/<user_id>", methods=["DELETE"])
+@app.route("/api/v1/delete-post/<int:user_id>/delete/<int:post_id>", methods=["DELETE"])
 @login_required
-def delet_post_api(user_id):
-    data = request.json
-    income_title = data["title"]
-    post = Post.query.filter(Post.author_id==user_id).all()
-    for post_title in post:
-        if income_title == post_title.title:    
-            Post.query.filter(Post.title == income_title).delete()
+def delet_post_api(user_id, post_id):
+    data = request.json  
+    if user_id == g.user_id:
+        try:
+            Post.query.filter(Post.author_id == user_id and Post.id == post_id).update({"deleted":1})
             db_session.commit()
             return {}, 200
-        else:
-            return {"error":"error"}
-@app.route("/api/v1/update-post/<user_id>", methods=["PUT"])
+        except: 
+            return{"error":"Невірний user_id або post_id"}    
+    else:
+        return{"error":"ви пробуєте видалити не свій пост"}
+@app.route("/api/v1/update-post/<int:user_id>/update/<int:post_id>", methods=["PUT"])
 @login_required
-def update_post_api(user_id):
+def update_post_api(user_id, post_id):
     data = request.json
-    income_title = data["title"]
     update_title = data["update_title"]
     update_body = data["update_body"]
     update_datatime = datetime.datetime.now()
-    post = Post.query.filter(Post.author_id==user_id).all()
-    for post_title in post:
-        if income_title == post_title.title:
-            Post.query.filter(Post.title == income_title).update({"title": update_title, "body": update_body, "created": update_datatime},synchronize_session=False)
+    if user_id == g.user_id:
+        try:
+            Post.query.filter(Post.author_id==user_id and Post.id==post_id).update({"title": update_title, 
+                                                                                    "body": update_body, 
+                                                                                    "created": update_datatime},
+                                                                                    synchronize_session=False)
             db_session.commit()
             return {"return":"onovleno"},200
-        else:
-            return {"error":"error"}
+        except:
+            return {"error": "Невірний user_id або post_id"}
+    else:
+        return{"error":"ви пробуєте оновити не свій пост"}

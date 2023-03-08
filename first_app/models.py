@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, DateTime
+from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, DateTime, BOOLEAN
 from first_app.db import Base
 import datetime
 class User(Base):
@@ -17,7 +17,9 @@ class User(Base):
         return f'<User {self.phone_number}>'
     def user_info(self):
         return f"{self.first_name}, {self.second_name}, {self.phone_number}"
-
+    def phone_num(self, phone_):
+        if phone_ != self.phone_number:
+            return{"error":"error"}
 class Post(Base):
     __tablename__= 'post'
     id = Column(Integer, primary_key=True)
@@ -25,11 +27,12 @@ class Post(Base):
     created = Column(TIMESTAMP())
     body = Column(Text(), unique=False)
     title = Column(Text(), unique=False)
-    deleted = Column(Integer)
-    def __init__(self,author_id=None,created=None, title=None, body=None):
+    deleted = Column(BOOLEAN)
+    def __init__(self,author_id=None,created=None, title=None, body=None, deleted=None):
         self.author_id = author_id
         self.created = created
         self.title = title
         self.body = body
+        self.deleted = deleted
     def __repr__(self):
         return f'<Author id {self.author_id}>'
