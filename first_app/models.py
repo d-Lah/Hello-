@@ -17,9 +17,6 @@ class User(Base):
         return f'<User {self.phone_number}>'
     def user_info(self):
         return f"{self.first_name}, {self.second_name}, {self.phone_number}"
-    def phone_num(self, phone_):
-        if phone_ != self.phone_number:
-            return{"error":"error"}
 class Post(Base):
     __tablename__= 'post'
     id = Column(Integer, primary_key=True)
