@@ -129,12 +129,14 @@ def create_post_api(user_id):
     title = data['title']
     body = data['body']
     current_datetime = datetime.datetime.today() 
-    deleted = False
     if not title:    
         return {"error": "немає title"},400
     if not body:
         return {"error": "немає  body"},400
-    new_post = Post(author_id,current_datetime,title,body,deleted)
+    new_post = Post(author_id,
+                    current_datetime,
+                    title,
+                    body)
     db_session.add(new_post)
     db_session.commit()    
     return {"status":"Published"}, 200
