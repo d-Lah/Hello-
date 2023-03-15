@@ -41,6 +41,6 @@ class Comments(db.Model):
     id = Column(Integer,primary_key=True)
     author_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     post_id = Column(Integer, ForeignKey("post.id"), nullable=False)
+    created = Column(TIMESTAMP())
     text = Column(Text(100),nullable=False)
     deleted = Column(Boolean(),default=False)
-    created = Column(TIMESTAMP())
