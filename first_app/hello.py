@@ -8,7 +8,7 @@ from flask import Flask, g, request, render_template, flash
 from werkzeug.security import check_password_hash, generate_password_hash
 from . import create_app
 from .db import get_db, db_session
-from first_app.models import User, Post, Comments
+from first_app.models import User, Post, Comment
 app = create_app()
 def login_required(f):
     @wraps(f)
@@ -192,9 +192,9 @@ def update_post_api(user_id, post_id):
     db_session.add(post)
     db_session.commit()
     return{"status": "Update"},200
-@app.route("/api/v1/create-comments/<int:user_id>/post/<int:post_id>")
+@app.route("/api/v1/create-comment/<int:user_id>/post/<int:post_id>")
 @login_required
-def create_comments_api(user_id, post_id):
+def create_comment_api(user_id, post_id):
     data = request.json
     if user_id != g.user_id:
         return{"error":"Request data isn't yours"},400
@@ -204,10 +204,42 @@ def create_comments_api(user_id, post_id):
     created = datetime.datetime.now()
     if not text:    
         return {"error": "немає text"},400
-    comment = Comments(author_id,
+    comment = Comment(author_id,
                     comments_post_id,
                     created,
                     text)
     db_session.add(comment)
     db_session.commit()    
     return {"status":"Published"}, 200
+
+@app.route("/api/v1/delete-comment/<int:user_id>/delete/<int:comment_id>", methods=["DELETE"])
+@login_required
+def delete_post_api(user_id, comment_id):
+    data = request.json  
+    if user_id != g.user_id:
+        return{"error":"Request data isn't yours"},400
+    author_id = g.user_id
+    comment = Comment.query.filter(Comment.id==comment_id and Comment.author_id==author_id).first()
+    if not comment:
+        return{"error":"Wrong post_id or author_id"},400
+    comment.deleted = 1
+    db_session.add(comment)
+    db_session.commit()
+    return {"status":"Deleted"}, 200
+@app.route("/api/v1/update-post/<int:user_id>/update/<int:comment_id>", methods=["PUT"])
+@login_required
+def update_post_api(user_id, comment_id):
+    data = request.json
+    update_text = data["update_title"]
+    update_datatime = datetime.datetime.now()
+    author_id = g.user_id
+    if user_id != g.user_id:
+        return{"error":"Request data isn't yours"},400
+    comment = Comment.query.filter(Comment.id==comment_id and Comment.author_id==author_id).first()
+    if not comment:
+        return{"error":"Wrong post_id or author_id"},400
+    comment.title = update_text
+    comment.datatime = update_datatime
+    db_session.add(comment)
+    db_session.commit()
+    return{"status": "Update"},200

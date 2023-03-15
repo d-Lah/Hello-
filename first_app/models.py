@@ -36,7 +36,7 @@ class Post(db.Model):
         self.deleted = deleted
     def __repr__(self):
         return f'<Author id {self.author_id}>'
-class Comments(db.Model):
+class Comment(db.Model):
     __tablename__='comments'
     id = Column(Integer,primary_key=True)
     author_id = Column(Integer, ForeignKey("user.id"), nullable=False)
