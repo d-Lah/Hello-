@@ -4,12 +4,12 @@ import datetime
 import json
 from sqlalchemy import insert
 from functools import wraps
-from flask import Flask, g, request, render_template, flash
+from flask import Flask, g, request, render_template, flash, Blueprint
 from werkzeug.security import check_password_hash, generate_password_hash
-from . import create_app
-from .db import get_db, db_session
 from first_app.models import User, Post, Comment
-app = create_app()
+
+hello_urls = Blueprint("sync", __name__)
+
 def login_required(f):
     @wraps(f)
     def _wrapper(*args,**kwargs):
@@ -28,7 +28,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return _wrapper
     
-@app.route("/api/v1/register-user", methods=['POST'])
+@hello_urls.route("/api/v1/register-user", methods=['POST'])
 def registrate_user_api():
     data = request.json
     phone_number = data["phone_number"]
@@ -48,7 +48,7 @@ def registrate_user_api():
     db_session.commit()
     return {}, 200
 
-@app.route("/api/v1/login", methods=['POST'])
+@hello_urls.route("/api/v1/login", methods=['POST'])
 def login_api():
     data = request.json
     income_phone_number = data.get("phone_number")
@@ -68,7 +68,7 @@ def login_api():
     access_token = jwt.encode(token_data, app.config['SECRET_KEY'], algorithm='HS256')
     return {"access_token": access_token}, 200
 
-@app.route("/api/v1/user-info/<int:user_id>", methods=['GET'])
+@hello_urls.route("/api/v1/user-info/<int:user_id>", methods=['GET'])
 @login_required
 def user_info_api(user_id):
     if user_id != g.user_id:
@@ -78,7 +78,7 @@ def user_info_api(user_id):
         return{"error": "Request data isn't yours"},400
     return {"info": user.user_info()},200
 
-@app.route("/api/v1/user-info/edit/<int:user_id>", methods=['PUT'])
+@hello_urls.route("/api/v1/user-info/edit/<int:user_id>", methods=['PUT'])
 @login_required
 def user_profile_edit(user_id):
     if user_id != g.user_id:
@@ -99,7 +99,7 @@ def user_profile_edit(user_id):
     db_session.commit()
     return{"status":"Update"},400
 
-@app.route("/api/v1/user-info/change-password/<int:user_id>", methods=['PUT'])
+@hello_urls.route("/api/v1/user-info/change-password/<int:user_id>", methods=['PUT'])
 @login_required
 def change_password(user_id):
     if user_id != g.user_id:
@@ -119,7 +119,7 @@ def change_password(user_id):
     db_session.commit()
     return{"status":"Update"},200
 
-@app.route("/api/v1/create-post/<int:user_id>", methods=["POST"])
+@hello_urls.route("/api/v1/create-post/<int:user_id>", methods=["POST"])
 @login_required
 def create_post_api(user_id):
     data = request.json
@@ -141,7 +141,7 @@ def create_post_api(user_id):
     db_session.commit()    
     return {"status":"Published"}, 200
 
-@app.route("/api/v1/user-posts/<int:user_id>", methods=["GET"])
+@hello_urls.route("/api/v1/user-posts/<int:user_id>", methods=["GET"])
 @login_required
 def user_post_api(user_id):
     db = get_db()
@@ -159,9 +159,9 @@ def user_post_api(user_id):
         })
     return {"posts":posts}, 200
 
-@app.route("/api/v1/delete-post/<int:user_id>/delete/<int:post_id>", methods=["DELETE"])
+@hello_urls.route("/api/v1/delete-post/<int:user_id>/delete/<int:post_id>", methods=["DELETE"])
 @login_required
-def delete_post_api(user_id, post_id):
+def delete_user_post_api(user_id, post_id):
     data = request.json  
     if user_id != g.user_id:
         return{"error":"Request data isn't yours"},400
@@ -173,9 +173,10 @@ def delete_post_api(user_id, post_id):
     db_session.add(post)
     db_session.commit()
     return {"status":"Deleted"}, 200
-@app.route("/api/v1/update-post/<int:user_id>/update/<int:post_id>", methods=["PUT"])
+
+@hello_urls.route("/api/v1/update-post/<int:user_id>/update/<int:post_id>", methods=["PUT"])
 @login_required
-def update_post_api(user_id, post_id):
+def update_user_post_api(user_id, post_id):
     data = request.json
     update_title = data["update_title"]
     update_body = data["update_body"]
@@ -192,7 +193,7 @@ def update_post_api(user_id, post_id):
     db_session.add(post)
     db_session.commit()
     return{"status": "Update"},200
-@app.route("/api/v1/create-comment/<int:user_id>/post/<int:post_id>")
+@hello_urls.route("/api/v1/create-comment/<int:user_id>/post/<int:post_id>")
 @login_required
 def create_comment_api(user_id, post_id):
     data = request.json
@@ -212,9 +213,9 @@ def create_comment_api(user_id, post_id):
     db_session.commit()    
     return {"status":"Published"}, 200
 
-@app.route("/api/v1/post-comments/<int:user_id>/<int:post_id>", methods=["GET"])
+@hello_urls.route("/api/v1/post-comments/<int:user_id>/<int:post_id>", methods=["GET"])
 @login_required
-def user_post_api(user_id, post_id):
+def user_post_comments_api(user_id, post_id):
     db = get_db()
     if user_id != g.user_id:
         return{"error":"Request data isn't yours"},400
@@ -233,7 +234,7 @@ def user_post_api(user_id, post_id):
     return {"post":post,
             "comments": comments}, 200
 
-@app.route("/api/v1/delete-comment/<int:user_id>/delete/<int:comment_id>", methods=["DELETE"])
+@hello_urls.route("/api/v1/delete-comment/<int:user_id>/delete/<int:comment_id>", methods=["DELETE"])
 @login_required
 def delete_post_api(user_id, comment_id):
     data = request.json  
@@ -248,7 +249,7 @@ def delete_post_api(user_id, comment_id):
     db_session.commit()
     return {"status":"Deleted"}, 200
 
-@app.route("/api/v1/update-post/<int:user_id>/update/<int:comment_id>", methods=["PUT"])
+@hello_urls.route("/api/v1/update-post/<int:user_id>/update/<int:comment_id>", methods=["PUT"])
 @login_required
 def update_post_api(user_id, comment_id):
     data = request.json

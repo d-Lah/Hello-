@@ -4,6 +4,9 @@ from flask_migrate import Migrate
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+from .hello import hello_urls
+from .db import db
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, template_folder='templates', instance_relative_config=True)
@@ -23,9 +26,11 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    from .db import db
     db.init_app(app)
     migrate = Migrate(app, db)
+    app.register_blueprint(hello_urls)
+
     return app
+
 if __name__=='__main__':
     create_app().run(debug=True)
