@@ -212,6 +212,27 @@ def create_comment_api(user_id, post_id):
     db_session.commit()    
     return {"status":"Published"}, 200
 
+@app.route("/api/v1/post-comments/<int:user_id>/<int:post_id>", methods=["GET"])
+@login_required
+def user_post_api(user_id, post_id):
+    db = get_db()
+    if user_id != g.user_id:
+        return{"error":"Request data isn't yours"},400
+    income_author_id = g.user_id
+    post = Post.query.filter(Post.deleted==False and Post.author_id==income_author_id and Post.id == post_id).first()
+    if not post:
+        return{"error":"Wrong post_id or author_id"},400
+    comments_db = Comment.query.filter(Comment.deleted==False and Comment.post_id ==post_id).all()
+    comments = []
+    for comment in comments_db:
+        comments.append({
+            "author id": comment.author_id,
+            "text": comment.text,
+            "created": comment.created
+        })
+    return {"post":post,
+            "comments": comments}, 200
+
 @app.route("/api/v1/delete-comment/<int:user_id>/delete/<int:comment_id>", methods=["DELETE"])
 @login_required
 def delete_post_api(user_id, comment_id):
@@ -226,6 +247,7 @@ def delete_post_api(user_id, comment_id):
     db_session.add(comment)
     db_session.commit()
     return {"status":"Deleted"}, 200
+
 @app.route("/api/v1/update-post/<int:user_id>/update/<int:comment_id>", methods=["PUT"])
 @login_required
 def update_post_api(user_id, comment_id):
