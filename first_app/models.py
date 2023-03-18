@@ -44,3 +44,15 @@ class Comment(db.Model):
     created = Column(TIMESTAMP())
     text = Column(Text(100),nullable=False)
     deleted = Column(Boolean(),default=False)
+    def __init__(self,author_id=None,
+                    post_id=None,
+                    created=None,
+                    text=None,
+                    deleted=None):
+        self.author_id = author_id
+        self.post_id = post_id
+        self.created = created
+        self.text = text
+        self.deleted = deleted
+    def __repr__(self):
+        return f'<Author id {self.author_id}>'
