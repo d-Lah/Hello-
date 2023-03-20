@@ -1,8 +1,8 @@
 import datetime
 from first_app.db import db
-from first_app.models import Post
 from first_app.config import SECRET_KEY
 from .login_required import login_required
+from first_app.models import Post, FileUpload
 from flask import Flask, g, request, render_template, flash, Blueprint
 
 post_urls = Blueprint("psot",__name__)
@@ -19,16 +19,31 @@ def create_post_api(user_id):
     title = data['title']
     body = data['body']
     current_datetime = datetime.datetime.today() 
+    file_id = data['file_id']
     
     if not title:    
         return {"error": "немає title"},400
-    if not body:
+    if not body: 
         return {"error": "немає  body"},400
     
+    if file_id == None:
+        new_post = Post(author_id,
+                    current_datetime,
+                    title,
+                    body,
+                    file_id=file_id)
+        db.session.add(new_post)
+        db.session.commit()    
+        return {"status":"Published"}, 200
+    file = FileUpload.query.filter(FileUpload.id == file_id).first()
+
+    if not file:
+        return{"error":"error"}
     new_post = Post(author_id,
                     current_datetime,
                     title,
-                    body)
+                    body,
+                    file_id=file.id)
     db.session.add(new_post)
     db.session.commit()    
     
@@ -49,6 +64,7 @@ def user_post_api(user_id):
             "author id": post.author_id,
             "title": post.title,
             "body": post.body,
+            "file_id": post.file_id,
             "created": post.created
         })
     
