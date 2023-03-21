@@ -5,11 +5,17 @@ from first_app.db import db
 from first_app.models import User
 from first_app.config import SECRET_KEY
 from .login_required import login_required
+from flask_marshmallow import Schema, fields,Marshmallow
 from flask import Flask, g, request, render_template, flash, Blueprint
 from werkzeug.security import check_password_hash, generate_password_hash
-
 user_urls = Blueprint("sync",__name__)
-    
+
+#@user_urls.route("/api/v1/register-user/test", methods=['GET'])
+#def test():
+#    user = User.query.all()
+#    schema = UserSchema(many=True)
+#    reslt = schema.dump(user)
+#    return{"res": reslt}
 @user_urls.route("/api/v1/register-user", methods=['POST'])
 def registrate_user_api():
     data = request.json

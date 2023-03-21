@@ -11,21 +11,24 @@ comment_urls = Blueprint("comment",__name__)
                     methods=["POST"])
 @login_required
 def create_comment_api(user_id, post_id):
-    data = request.json
     if user_id != g.user_id:
         return{"error":"Request data isn't yours"},400
+    
+    data = request.json
     author_id = g.user_id
     comments_post_id = post_id
     text = data["text"]
     created = datetime.datetime.now()
     if not text:    
         return {"error": "немає text"},400
+    
     comment = Comment(author_id,
                     comments_post_id,
                     created,
                     text)
     db.session.add(comment)
     db.session.commit()    
+    
     return {"status":"Published"}, 200
 
 @comment_urls.route("/api/v1/post-comments/post/<int:post_id>",
@@ -43,13 +46,13 @@ def post_comments_api(post_id):
     
     for comment in comments_db:
         comments.append({
-            "author id": comment.author_id,
+            "author_id": comment.author_id,
             "text": comment.text,
             "created": comment.created
         })
     
     return {"post":{
-            "author id": post.author_id,
+            "author_id": post.author_id,
             "title": post.title,
             "body": post.body,
             "created": post.created

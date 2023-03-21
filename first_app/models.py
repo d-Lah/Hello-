@@ -1,3 +1,4 @@
+from flask_marshmallow import Marshmallow
 import datetime
 from .db import db
 from sqlalchemy import (Column,
@@ -11,7 +12,7 @@ from sqlalchemy import (Column,
 class User(db.Model):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    phone_number = Column(Text(), unique =True)
+    phone_number = Column(Text(), unique = True)
     first_name = Column(Text(), unique =False)
     second_name = Column(Text(), unique =False)
     password = Column(Text(), unique =False)
@@ -30,7 +31,6 @@ class User(db.Model):
     
     def user_info(self):
         return f"{self.first_name}, {self.second_name}, {self.phone_number}"
-
 class Post(db.Model):
     __tablename__= 'post'
     id = Column(Integer, primary_key=True)

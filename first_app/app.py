@@ -6,7 +6,7 @@ from first_app.api.user import user_urls
 from first_app.api.post import post_urls
 from first_app.api.comment import comment_urls
 from first_app.api.file_upload import file_upload
-
+from flask_marshmallow import Marshmallow
 basedir = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = "/home/im/Hello-/first_app/uploads"
 
