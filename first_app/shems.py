@@ -13,13 +13,13 @@ class PostSchema(ma.Schema):
     class Meta:
         model = Post
         load_instance = True
-        fields = ("author_id","created","body","title","deleted","file_id")
+        fields = ("author_id","user_name","created","body","title","deleted","file_id")
         
 class CommentSchema(ma.Schema):
     class Meta:
         model = Comment
         load_instance = True
-        fields = ("author_id","post_id","created","text","deleted")
+        fields = ("author_id","post_id","user_name","created","text","deleted")
         
 class FileUploadSchema(ma.Schema):
     class Meta:

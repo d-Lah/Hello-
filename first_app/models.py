@@ -35,6 +35,7 @@ class Post(db.Model):
     __tablename__= 'post'
     id = Column(Integer, primary_key=True)
     author_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    user_name = Column(Text(), ForeignKey("user.first_name"),nullable=False)
     created = Column(TIMESTAMP())
     body = Column(Text(), unique=False)
     title = Column(Text(), unique=False)
@@ -45,13 +46,15 @@ class Post(db.Model):
                  created=None, title=None,
                  body=None,
                  deleted=None,
-                 file_id=None):
+                 file_id=None,
+                 user_name=None):
         self.author_id = author_id
         self.created = created
         self.title = title
         self.body = body
         self.deleted = deleted
         self.file_id = file_id
+        self.user_name = user_name
     def __repr__(self):
         return f'<Author id {self.author_id}>'
 
@@ -60,6 +63,7 @@ class Comment(db.Model):
     id = Column(Integer,primary_key=True)
     author_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     post_id = Column(Integer, ForeignKey("post.id"), nullable=False)
+    user_name = Column(Text(), ForeignKey("user.first_name"),nullable=False)
     created = Column(TIMESTAMP())
     text = Column(Text(100),nullable=False)
     deleted = Column(Boolean(),default=False)
@@ -69,6 +73,7 @@ class Comment(db.Model):
                     created=None,
                     text=None,
                     deleted=None,
+                    user_name=None
                     ):
         
         self.author_id = author_id
@@ -76,6 +81,7 @@ class Comment(db.Model):
         self.created = created
         self.text = text
         self.deleted = deleted
+        self.user_name = user_name
     def __repr__(self):
         return f'<Auth9or id {self.author_id}>'
 

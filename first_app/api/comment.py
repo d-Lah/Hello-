@@ -2,7 +2,7 @@ import datetime
 from first_app.db import db
 from first_app.config import SECRET_KEY
 from .login_required import login_required
-from first_app.models import Post, Comment
+from first_app.models import Post, Comment, User
 from flask import Flask, g, request, render_template, flash, Blueprint
 
 comment_urls = Blueprint("comment",__name__)
@@ -14,8 +14,11 @@ def create_comment_api(user_id, post_id):
     if user_id != g.user_id:
         return{"error":"Request data isn't yours"},400
     
+    user = User.query.filter(User.id==g.user_id).one()
+
     data = request.json
     author_id = g.user_id
+    author_name = user.first_name
     comments_post_id = post_id
     text = data["text"]
     created = datetime.datetime.now()
@@ -25,39 +28,12 @@ def create_comment_api(user_id, post_id):
     comment = Comment(author_id,
                     comments_post_id,
                     created,
-                    text)
+                    text,
+                    user_name=author_name)
     db.session.add(comment)
     db.session.commit()    
     
     return {"status":"Published"}, 200
-
-@comment_urls.route("/api/v1/post-comments/post/<int:post_id>",
-                    methods=["GET"])
-@login_required
-def post_comments_api(post_id):
-    income_author_id = g.user_id
-    post = Post.query.filter(Post.deleted== False,
-                             Post.id == post_id).first()
-    if not post:
-        return{"error":"Wrong post_id"},400
-    comments_db = Comment.query.filter(Comment.post_id == post_id,
-                                       Comment.deleted == False).all()
-    comments = []
-    
-    for comment in comments_db:
-        comments.append({
-            "author_id": comment.author_id,
-            "text": comment.text,
-            "created": comment.created
-        })
-    
-    return {"post":{
-            "author_id": post.author_id,
-            "title": post.title,
-            "body": post.body,
-            "created": post.created
-            },
-            "comments": comments}, 200
 
 @comment_urls.route("/api/v1/delete-comment/<int:user_id>/delete/<int:comment_id>",
                     methods=["DELETE"])

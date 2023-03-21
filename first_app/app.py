@@ -1,6 +1,6 @@
 import os
-from .db import db
 from flask import Flask
+from first_app.db import db
 from flask_migrate import Migrate
 from first_app.api.user import user_urls
 from first_app.api.post import post_urls
