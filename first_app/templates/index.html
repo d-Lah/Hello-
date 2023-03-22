@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<title>Page Title</title>
+</head>
+<body>
+<div>
+    <a href="/login" style="visibility: visible;" id="loginPageLink"> Login Page </a>
+    <a href="/login" style="visibility: visible;" id="registerPageLink"> Register page </a>
+
+</div>
+
+<h1 id="textHeading">My First Heading</h1>
+<p id="textParagraph">My first paragraph.</p>
+
+<input type="text" name="input" id="changeTextInput">
+
+</body>
+
+<script type="text/javascript">
+    var token = localStorage.getItem('token');
+    if (token){
+        $( "#loginPageLink").css( "visibility", "hidden" );
+        $( "#registerPageLink").css( "visibility", "hidden" );
+    }
+</script>
+<script type="text/javascript">
+    $( "#changeTextInput" ).on('input', function() {
+    console.log(this);
+    var incomeText = $(this).val();
+    $( "#textHeading" ).text(incomeText);
+    $( "#textParagraph" ).text(incomeText);
+});
+</script>
+</html>

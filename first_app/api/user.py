@@ -45,11 +45,11 @@ def login_api():
     income_phone_number = data.get("phone_number")
     income_password = data.get("password")
     if not income_phone_number or not income_password:
-        return {"error":"Not phone number or password"}, 400    
-    
+        return {"error":"Not phone number or password"}, 400
+
     user = User.query.filter(User.phone_number==income_phone_number).first()
     if not user:
-        return {"error":"Невірний номер телефону, або пароль"},400
+        return {"error":"Wrong phone number or password"},400
     if not check_password_hash(user.password,income_password):
         return {"error": f"Паролі не співпадають {income_phone_number}"}, 400
     
