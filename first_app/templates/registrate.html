@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <a href="/"> Main page </a>
+    </div>
+    PhoneNumber: <input type="text" id="phoneNumber" name="phoneNumber"><br>
+    FirstName: <input type="text" id="firstName" name="firstName"><br>
+    SecondName: <input type="text" id="secondName" name="secondName"><br>
+    Password: <input type="text" id="password" name="password"><br>
+    <input type="submit" id="registrateButton" name="registrateButton" value="Registrate Button">
+    <p style="visibility: hidden;" id="errorRequiredFields">Required fields is empty</p>
+    <p style="visibility: hidden;" id="phoneNumberExist">Phone number exist</p>
+</body>
+<script>
+    $("#registrateButton").on("click", function(){
+        let phoneNumber = $("#phoneNumber").val();
+        let firstName = $("#firstName").val();
+        let secondName = $("#secondName").val();
+        let password = $("#password").val();
+        if(phoneNumber === ""|| firstName === ""|| !secondName === ""|| password === ""){
+            $("#errorRequiredFields").css("visibility", "visible");
+            return
+        }
+        $.ajax({
+            url: "/api/v1/register-user",
+            method: "POST",
+            dataType: "json",
+            contentType: "application/json;  charset=utf-8",
+            data: JSON.stringify({
+                phone_number: phoneNumber,
+                first_name: firstName,
+                second_name: secondName,
+                password: password,
+            }),
+            success: function(result){
+                top.location.href = "/login"    
+            },
+            error: function(request, status, error){
+                $("#phoneNumberExist").css("visibiliti", "visible");
+            }
+        });
+    });
+</script>
+</html>
