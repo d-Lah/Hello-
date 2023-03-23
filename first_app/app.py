@@ -4,10 +4,11 @@ from flask import Flask
 from first_app.db import db
 from flask_migrate import Migrate
 from first_app.views.index import index
-from first_app.views.registrate import registrate
+from first_app.views.login import login
 from first_app.api.user import user_urls
 from first_app.api.post import post_urls
 from first_app.api.comment import comment_urls
+from first_app.views.registrate import registrate
 from first_app.api.file_upload import file_upload
 
 
@@ -43,6 +44,7 @@ def create_app(test_config=None):
     app.register_blueprint(file_upload)
     app.register_blueprint(index)
     app.register_blueprint(registrate)
+    app.register_blueprint(login)
     return app
 
 if __name__=='__main__':

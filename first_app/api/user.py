@@ -13,10 +13,10 @@ user_urls = Blueprint("sync",__name__)
 @user_urls.route("/api/v1/register-user", methods=['POST'])
 def registrate_user_api():
     data = request.json
-    phone_number = data["phone_number"]
-    first_name = data["first_name"]
-    second_name = data["second_name"]
-    password = data["password"]
+    phone_number = data.get("phone_number")
+    first_name = data.get("first_name")
+    second_name = data.get("second_name")
+    password = data.get("password")
     
     exists = db.session.query(User.query.filter(User.phone_number==phone_number).exists()).scalar()
     if exists:
@@ -52,36 +52,32 @@ def login_api():
     
     return {"access_token": access_token}, 200
 
-@user_urls.route("/api/v1/user-info/<int:user_id>",
+@user_urls.route("/api/v1/user-info",
                   methods=['GET'])
 @login_required
-def user_info_api(user_id):
-    if user_id != g.user_id:
-        return{"error": "Request data isn't yours"},400
-    
+def user_info_api():
+
     user = User.query.filter(User.id==g.user_id).first()
     if not user:
         return{"error": "Request data isn't yours"},400
     
-    return {"info": user.user_info()},200
+    return {"info": user.full_name()},200
 
-@user_urls.route("/api/v1/user-info/edit/<int:user_id>",
+@user_urls.route("/api/v1/user-info/edit",
                   methods=['PUT'])
 @login_required
-def user_profile_edit(user_id):
-    if user_id != g.user_id:
-        return{"error": "Request data isn't yours"}
-    
+def user_profile_edit():
+
     data = request.json
-    new_phone_number = data["phone_number"]
-    new_first_name = data["first_name"]
-    new_second_name = data["second_name"]
+    new_phone_number = data.get("phone_number")
+    new_first_name = data.get("first_name")
+    new_second_name = data.get("second_name")
     
     exists = db.session.query(User.query.filter(User.phone_number==new_phone_number).exists()).scalar()
     if exists:
         return{"error:":"Phone number already exists"}, 400
     
-    user = User.query.filter(User.id==user_id).first()
+    user = User.query.filter(User.id==g.user_id).first()
     if not user:
         return{"error": "Request data isn't yours"},400
     
@@ -92,16 +88,14 @@ def user_profile_edit(user_id):
     
     return{"status":"Update"},400
 
-@user_urls.route("/api/v1/user-info/change-password/<int:user_id>",
+@user_urls.route("/api/v1/user-info/change-password",
                   methods=['PUT'])
 @login_required
-def change_password(user_id):
-    if user_id != g.user_id:
-        return{"error": "Request data isn't yours"},400
+def change_password():
     
     data = request.json
-    old_password = data["old_password"]
-    new_password = data["new_password"]
+    old_password = data.get("old_password")
+    new_password = data.get("new_password")
     
     user = User.query.filter(User.id==g.user_id).first()
     if not user: 

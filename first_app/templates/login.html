@@ -48,6 +48,7 @@
       }),
       success: function (result) {
         localStorage.setItem('token', result.access_token);
+        top.location.href = "/"
       },
       error: function (request, status, error) {
         $('#loginOrPasswordInvalid').css("visibility", "visible");

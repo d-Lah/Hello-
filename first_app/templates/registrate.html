@@ -11,11 +11,14 @@
     <div>
         <a href="/"> Main page </a>
     </div>
+    
     PhoneNumber: <input type="text" id="phoneNumber" name="phoneNumber"><br>
     FirstName: <input type="text" id="firstName" name="firstName"><br>
     SecondName: <input type="text" id="secondName" name="secondName"><br>
     Password: <input type="text" id="password" name="password"><br>
-    <input type="submit" id="registrateButton" name="registrateButton" value="Registrate Button">
+    
+    <input type="button" id="registrateButton" name="registrateButton" value="Registrate Button">
+    
     <p style="visibility: hidden;" id="errorRequiredFields">Required fields is empty</p>
     <p style="visibility: hidden;" id="phoneNumberExist">Phone number exist</p>
 </body>
@@ -25,10 +28,11 @@
         let firstName = $("#firstName").val();
         let secondName = $("#secondName").val();
         let password = $("#password").val();
-        if(phoneNumber === ""|| firstName === ""|| !secondName === ""|| password === ""){
+        if(phoneNumber === ""|| firstName === ""|| secondName === ""|| password === ""){
             $("#errorRequiredFields").css("visibility", "visible");
             return
         }
+        
         $.ajax({
             url: "/api/v1/register-user",
             method: "POST",
