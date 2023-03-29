@@ -1,2 +1,6 @@
+import os
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 SECRET_KEY='dev'
-UPLOAD_FOLDER = r"/home/im/Hello-/first_app/uploads/"
+UPLOAD_FOLDER = os.path.join(basedir, "uploads")

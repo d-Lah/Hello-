@@ -3,17 +3,19 @@ import os
 from flask import Flask
 from first_app.db import db
 from flask_migrate import Migrate
+from first_app.views.index import index
+from first_app.views.login import login
 from first_app.api.user import user_urls
 from first_app.api.post import post_urls
 from first_app.api.comment import comment_urls
+from first_app.views.registrate import registrate
 from first_app.api.file_upload import file_upload
-from first_app.views.index import index
-from flask_marshmallow import Marshmallow
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # /home/im/Hello-/first_app/ -> Dynamic os.path.join(basedir,'data.sqlite')
-UPLOAD_FOLDER = "/home/im/Hello-/first_app/uploads"
+UPLOAD_FOLDER = os.path.join(basedir, "uploads")
 
 def create_app(test_config=None):
     # create and configure the app
@@ -36,12 +38,13 @@ def create_app(test_config=None):
         pass
 
     db.init_app(app)
-    migrate = Migrate(app, db)
     app.register_blueprint(user_urls)
     app.register_blueprint(post_urls)
     app.register_blueprint(comment_urls)
     app.register_blueprint(file_upload)
     app.register_blueprint(index)
+    app.register_blueprint(registrate)
+    app.register_blueprint(login)
     return app
 
 if __name__=='__main__':

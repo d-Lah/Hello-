@@ -30,7 +30,9 @@ class User(db.Model):
         return f'<User {self.phone_number}>'
     
     def user_info(self):
-        return f"{self.first_name}, {self.second_name}, {self.phone_number}"
+        return f"{self.first_name} {self.second_name}, {self.phone_number}"
+    def full_name(self):
+        return f"{self.first_name} {self.second_name}"
 class Post(db.Model):
     __tablename__= 'post'
     id = Column(Integer, primary_key=True)

@@ -5,16 +5,18 @@
 <title>Page Title</title>
 </head>
 <body>
-<div>
-    <a href="/login" style="visibility: visible;" id="loginPageLink"> Login Page </a>
-    <a href="/login" style="visibility: visible;" id="registerPageLink"> Register page </a>
+    <div>
+        <a href="/registrate" style="visibility: visible;" id="registerPageLink"> Register page </a>
+        <a href="/login" style="visibility: visible;" id="loginPageLink"> Login Page </a><br>
+    </div>
+    <header> 
+        <h3><p id="userFullName"></p></h3>
+        <input style="visibility: hidden;" type="button" id="logOut" name="logOut" value="Log out">
+    </header> 
+    <h1 id="textHeading">My First Heading</h1>
+    <p id="textParagraph">My first paragraph.</p>
 
-</div>
-
-<h1 id="textHeading">My First Heading</h1>
-<p id="textParagraph">My first paragraph.</p>
-
-<input type="text" name="input" id="changeTextInput">
+    <input type="text" name="input" id="changeTextInput">
 
 </body>
 
@@ -23,14 +25,28 @@
     if (token){
         $( "#loginPageLink").css( "visibility", "hidden" );
         $( "#registerPageLink").css( "visibility", "hidden" );
+        $("#logOut").css("visibility","visible");
+        $.ajax({
+            url: "/api/v1/user-info",
+            method: "GET",
+            headers: {"Authorization": token},
+            success: function(result){
+                $("#userFullName").text(result.info);
+            }
+        })
     }
+    $("#logOut").on("click", function(){
+        localStorage.clear();
+        location.reload();
+    });
 </script>
+
 <script type="text/javascript">
     $( "#changeTextInput" ).on('input', function() {
-    console.log(this);
-    var incomeText = $(this).val();
-    $( "#textHeading" ).text(incomeText);
-    $( "#textParagraph" ).text(incomeText);
-});
+        console.log(this);
+        var incomeText = $(this).val();
+        $( "#textHeading" ).text(incomeText);
+        $( "#textParagraph" ).text(incomeText);
+    });
 </script>
 </html>

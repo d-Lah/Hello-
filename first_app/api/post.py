@@ -8,22 +8,20 @@ from flask import Flask, g, request, render_template, flash, Blueprint
 post_urls = Blueprint("psot",__name__)
 schema = PostSchema(many=True)
 schema_comment = CommentSchema(many=True)
-@post_urls.route("/api/v1/create-post/<int:user_id>",
+@post_urls.route("/api/v1/create-post/",
                  methods=["POST"])
 @login_required
-def create_post_api(user_id):
-    if user_id != g.user_id:
-        return{"error":"Request data isn't yours"},400
-    
+def create_post_api():
+
     user = User.query.filter(User.id==g.user_id).one()
     
     author_id = g.user_id
     author_name = user.first_name
     data = request.json
-    title = data['title']
-    body = data['body']
+    title = data.get('title')
+    body = data.get('body')
     current_datetime = datetime.datetime.today() 
-    file_id = data['file_id']
+    file_id = data.get('file_id')
     
     if not title:    
         return {"error": "немає title"},400
@@ -54,12 +52,10 @@ def create_post_api(user_id):
     
     return {"status":"Published"}, 200
 
-@post_urls.route("/api/v1/user-posts/<int:user_id>",
+@post_urls.route("/api/v1/user-posts",
                  methods=["GET"])
 @login_required
-def user_post_api(user_id):
-    if user_id != g.user_id:
-        return{"error":"Request data isn't yours"},400
+def user_post_api():
     
     income_author_id = g.user_id
     
@@ -68,14 +64,12 @@ def user_post_api(user_id):
     
     return {"posts":user_posts}, 200
 
-@post_urls.route("/api/v1/delete-post/<int:user_id>/delete/<int:post_id>",
+@post_urls.route("/api/v1/delete-post/delete/<int:post_id>",
                  methods=["DELETE"])
 @login_required
-def delete_post_api(user_id, post_id):
-    data = request.json  
-    if user_id != g.user_id:
-        return{"error":"Request data isn't yours"},400
-    
+def delete_post_api(post_id):
+    data = request.json
+
     author_id = g.user_id
     post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
     if not post:
@@ -87,21 +81,19 @@ def delete_post_api(user_id, post_id):
     
     return {"status":"Deleted"}, 200
 
-@post_urls.route("/api/v1/update-post/<int:user_id>/update/<int:post_id>",
+@post_urls.route("/api/v1/update-post/update/<int:post_id>",
                  methods=["PUT"])
 @login_required
-def update_post_api(user_id, post_id):
+def update_post_api(post_id):
     data = request.json
-    update_title = data["update_title"]
-    update_body = data["update_body"]
+    update_title = data.get("update_title")
+    update_body = data.get("update_body")
     update_datatime = datetime.datetime.now()
     author_id = g.user_id
-    
-    if user_id != g.user_id:
-        return{"error":"Request data isn't yours"},400
+
     post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
     if not post:
-        return{"error":"Wrong post_id or author_id"},400
+        return{"error":"Wrong post_id"},400
     
     post.title = update_title
     post.body = update_body
@@ -115,6 +107,7 @@ def update_post_api(user_id, post_id):
                     methods=["GET"])
 @login_required
 def post_comments_api(post_id):
+    
     post = Post.query.filter(Post.deleted== False,
                              Post.id == post_id).first()
     if not post:
