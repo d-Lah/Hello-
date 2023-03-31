@@ -26,25 +26,9 @@ def create_post_api():
     body = data.get('body')
     current_datetime = datetime.datetime.today() 
     
-    if not title:    
-        return {"title_error": "немає title"},400
-    if not body: 
-        return {"body_error": "немає  body"},400
-    
-    # if file_id is None:
-    #     new_post = Post(author_id,
-    #                 current_datetime,
-    #                 title,
-    #                 body,
-    #                 file_id=file_id,
-    #                 user_name=author_name)
-    #     db.session.add(new_post)
-    #     db.session.commit()    
-    #     return {"status":"Published"}, 200
-    # file = FileUpload.query.filter(FileUpload.id == file_id).first()
+    if not title or not body:    
+        return {"error": "Not title or body"},400
 
-    # if not file:
-    #     return{"error":"error"}
     new_post = Post(author_id,
                     current_datetime,
                     title,
@@ -64,10 +48,10 @@ def user_post_api():
     income_author_id = g.user_id
     
     posts = Post.query.filter(Post.deleted==False, Post.author_id==income_author_id).all()
-    user_posts = schema.dump(posts, many=True)
+    user_posts = PostSchema(many=True).dump(posts)
     # file_post = schema.dump(posts)
-    for post in user_posts:
-        return {"file":post.file}, 200
+    # for post in user_posts:
+    return {"file":user_posts}, 200
 
 @post_urls.route("/api/v1/delete-post/delete/<int:post_id>",
                  methods=["DELETE"])
@@ -121,12 +105,6 @@ def post_comments_api(post_id):
     post_comments = Comment.query.filter(Comment.post_id == post_id,
                                        Comment.deleted == False).all()
     comments = schema_comment.dump(post_comments)
-
-    return {"post":{
-            "author_id": post.author_id,
-            "user_name": post.user_name,
-            "title": post.title,
-            "body": post.body,
-            "created": post.created
-            },
+    post = PostSchema().dump(post_comments)
+    return {"post":post,
             "comments": comments}, 200

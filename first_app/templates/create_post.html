@@ -13,8 +13,9 @@
     Body: <input type="text" id="body" name="body"><br>
     File: <input type="file" id="file" multiple><br>
     <input type="button" id="post" name="post" value="Post">
-    
-    <p style="visibility: hidden;" id="notFile">Not file</p>
+    <p style="visibility: hidden;" id="status">Published</p>
+    <p style="visibility: hidden;" id="notTitleOrBody">Not title or body</p>
+    <p style="visibility: hidden;" id="wrongFileExtension">Wrong file extension</p>
 </body>
 
 <script>
@@ -38,6 +39,9 @@
             }),
             success: function(result){
                 formData.append("post_id", result.post_id)
+                if (!file){
+                    return $("#status").css("visibility","visible")
+                }
                 $.ajax({
                     url: "/api/v1/upload-file",
                     method: "POST",
@@ -45,14 +49,17 @@
                     contentType:false,
                     data: formData,
                     success: function(result){
-                        alert(result.status);
-
+                        return $("#status").css("visibility","visible")
                     },
                     error: function(request,status,error){
-                    alert(request.error);
+                        return $("#wrongFileExtension").css("visibility", "visible")
                     }
                 });
+                return result.status
             },
+            error: function(request,status,error){
+                return $("#notTitleOrBody").css("visibility","visible")
+            }
         });
     })
 </script>
