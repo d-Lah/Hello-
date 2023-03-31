@@ -8,6 +8,7 @@
     <div>
         <a href="/registrate" style="visibility: visible;" id="registerPageLink"> Register page </a>
         <a href="/login" style="visibility: visible;" id="loginPageLink"> Login Page </a><br>
+        <a href="/create-post" style="visibility: visible;" id="createPost"> Create post </a><br>
     </div>
     <header> 
         <h3><p id="userFullName"></p></h3>
@@ -21,7 +22,8 @@
 </body>
 
 <script type="text/javascript">
-    var token = localStorage.getItem('token');
+    let token = localStorage.getItem('token');
+    let prefix = "Bearer";
     if (token){
         $( "#loginPageLink").css( "visibility", "hidden" );
         $( "#registerPageLink").css( "visibility", "hidden" );
@@ -29,7 +31,7 @@
         $.ajax({
             url: "/api/v1/user-info",
             method: "GET",
-            headers: {"Authorization": token},
+            headers: {"Authorization": `${prefix} ${token}`},
             success: function(result){
                 $("#userFullName").text(result.info);
             }

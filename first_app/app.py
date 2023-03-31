@@ -10,6 +10,7 @@ from first_app.api.post import post_urls
 from first_app.api.comment import comment_urls
 from first_app.views.registrate import registrate
 from first_app.api.file_upload import file_upload
+from first_app.views.create_post import create_post
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -36,8 +37,8 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
     db.init_app(app)
+    migrate = Migrate(app, db)
     app.register_blueprint(user_urls)
     app.register_blueprint(post_urls)
     app.register_blueprint(comment_urls)
@@ -45,6 +46,7 @@ def create_app(test_config=None):
     app.register_blueprint(index)
     app.register_blueprint(registrate)
     app.register_blueprint(login)
+    app.register_blueprint(create_post)
     return app
 
 if __name__=='__main__':

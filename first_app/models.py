@@ -1,4 +1,3 @@
-from flask_marshmallow import Marshmallow
 import datetime
 from .db import db
 from sqlalchemy import (Column,
@@ -9,6 +8,7 @@ from sqlalchemy import (Column,
                         DateTime,
                         Boolean,
                         ForeignKey)
+from sqlalchemy.orm import relationship
 class User(db.Model):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
@@ -33,6 +33,7 @@ class User(db.Model):
         return f"{self.first_name} {self.second_name}, {self.phone_number}"
     def full_name(self):
         return f"{self.first_name} {self.second_name}"
+
 class Post(db.Model):
     __tablename__= 'post'
     id = Column(Integer, primary_key=True)
@@ -42,14 +43,14 @@ class Post(db.Model):
     body = Column(Text(), unique=False)
     title = Column(Text(), unique=False)
     deleted = Column(Boolean(),default=False)
-    file_id = Column(Integer, ForeignKey("file_upload.id"), nullable=True)
-
+    file = relationship("FileUpload", backref="post")
     def __init__(self,author_id=None,
                  created=None, title=None,
                  body=None,
                  deleted=None,
                  file_id=None,
-                 user_name=None):
+                 user_name=None,
+                 ):
         self.author_id = author_id
         self.created = created
         self.title = title
@@ -59,7 +60,7 @@ class Post(db.Model):
         self.user_name = user_name
     def __repr__(self):
         return f'<Author id {self.author_id}>'
-
+    
 class Comment(db.Model):
     __tablename__='comments'
     id = Column(Integer,primary_key=True)
@@ -69,7 +70,6 @@ class Comment(db.Model):
     created = Column(TIMESTAMP())
     text = Column(Text(100),nullable=False)
     deleted = Column(Boolean(),default=False)
-
     def __init__(self,author_id=None,
                     post_id=None,
                     created=None,
@@ -85,12 +85,13 @@ class Comment(db.Model):
         self.deleted = deleted
         self.user_name = user_name
     def __repr__(self):
-        return f'<Auth9or id {self.author_id}>'
+        return f'<Author id {self.author_id}>'
 
 class FileUpload(db.Model):
     __tablename__ = 'file_upload'
     id = Column(Integer,primary_key=True)
+    post_id = Column(Integer, ForeignKey("post.id"), nullable=False)
     url = Column(String())
-    
-    def __init__(self, url):
+    def __init__(self, url, post_id):
         self.url = url
+        self.post_id = post_id

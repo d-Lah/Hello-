@@ -1,14 +1,18 @@
 import datetime
+from flask import jsonify
 from first_app.db import db
 from first_app.config import SECRET_KEY
 from .login_required import login_required
 from first_app.shems import PostSchema, CommentSchema
 from first_app.models import Post, FileUpload, Comment, User
 from flask import Flask, g, request, render_template, flash, Blueprint
-post_urls = Blueprint("psot",__name__)
-schema = PostSchema(many=True)
+
+post_urls = Blueprint("post",__name__)
+
+schema = PostSchema()
 schema_comment = CommentSchema(many=True)
-@post_urls.route("/api/v1/create-post/",
+
+@post_urls.route("/api/v1/create-post",
                  methods=["POST"])
 @login_required
 def create_post_api():
@@ -21,36 +25,36 @@ def create_post_api():
     title = data.get('title')
     body = data.get('body')
     current_datetime = datetime.datetime.today() 
-    file_id = data.get('file_id')
     
     if not title:    
-        return {"error": "немає title"},400
+        return {"title_error": "немає title"},400
     if not body: 
-        return {"error": "немає  body"},400
+        return {"body_error": "немає  body"},400
     
-    if file_id is None:
-        new_post = Post(author_id,
-                    current_datetime,
-                    title,
-                    body,
-                    file_id=file_id,
-                    user_name=author_name)
-        db.session.add(new_post)
-        db.session.commit()    
-        return {"status":"Published"}, 200
-    file = FileUpload.query.filter(FileUpload.id == file_id).first()
+    # if file_id is None:
+    #     new_post = Post(author_id,
+    #                 current_datetime,
+    #                 title,
+    #                 body,
+    #                 file_id=file_id,
+    #                 user_name=author_name)
+    #     db.session.add(new_post)
+    #     db.session.commit()    
+    #     return {"status":"Published"}, 200
+    # file = FileUpload.query.filter(FileUpload.id == file_id).first()
 
-    if not file:
-        return{"error":"error"}
+    # if not file:
+    #     return{"error":"error"}
     new_post = Post(author_id,
                     current_datetime,
                     title,
                     body,
-                    file_id=file.id)
+                    user_name=author_name)
     db.session.add(new_post)
     db.session.commit()    
     
-    return {"status":"Published"}, 200
+    return {"status":"Published",
+            "post_id": new_post.id}, 200
 
 @post_urls.route("/api/v1/user-posts",
                  methods=["GET"])
@@ -60,9 +64,10 @@ def user_post_api():
     income_author_id = g.user_id
     
     posts = Post.query.filter(Post.deleted==False, Post.author_id==income_author_id).all()
-    user_posts = schema.dump(posts)
-    
-    return {"posts":user_posts}, 200
+    user_posts = schema.dump(posts, many=True)
+    # file_post = schema.dump(posts)
+    for post in user_posts:
+        return {"file":post.file}, 200
 
 @post_urls.route("/api/v1/delete-post/delete/<int:post_id>",
                  methods=["DELETE"])

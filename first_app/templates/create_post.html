@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <title>Create post</title>
+</head>
+
+<body>
+    Title: <input type="text" id="title" name="title"><br>
+    Body: <input type="text" id="body" name="body"><br>
+    File: <input type="file" id="file" multiple><br>
+    <input type="button" id="post" name="post" value="Post">
+    
+    <p style="visibility: hidden;" id="notFile">Not file</p>
+</body>
+
+<script>
+    $("#post").on("click", function(){
+        let title = $("#title").val();
+        let body = $("#body").val();
+        let file = document.getElementById("file").files[0];
+        let formData = new FormData();
+        let token = localStorage.getItem('token');
+        let prefix = "Bearer";        
+        formData.append("file", file);
+        $.ajax({
+            url: "/api/v1/create-post",
+            method: "POST",
+            dataType: "json",
+            headers: {"Authorization": `${prefix} ${token}`},
+            contentType: "application/json;  charset=utf-8",
+            data: JSON.stringify({
+                title: title,
+                body: body,
+            }),
+            success: function(result){
+                formData.append("post_id", result.post_id)
+                $.ajax({
+                    url: "/api/v1/upload-file",
+                    method: "POST",
+                    processData: false,
+                    contentType:false,
+                    data: formData,
+                    success: function(result){
+                        alert(result.status);
+
+                    },
+                    error: function(request,status,error){
+                    alert(request.error);
+                    }
+                });
+            },
+        });
+    })
+</script>
+</html>

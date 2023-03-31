@@ -15,24 +15,29 @@
     PhoneNumber: <input type="text" id="phoneNumber" name="phoneNumber"><br>
     FirstName: <input type="text" id="firstName" name="firstName"><br>
     SecondName: <input type="text" id="secondName" name="secondName"><br>
-    Password: <input type="text" id="password" name="password"><br>
+    Password: <input type="password" id="password" name="password"><br>
+    RepeatingPassword: <input type="password" id="repeatingPassword" name="repeatingPassword"><br>
     
     <input type="button" id="registrateButton" name="registrateButton" value="Registrate Button">
     
     <p style="visibility: hidden;" id="errorRequiredFields">Required fields is empty</p>
+    <p style="visibility: hidden;" id="wrongRepeatingPassword">Wrong repeating password</p>
     <p style="visibility: hidden;" id="phoneNumberExist">Phone number exist</p>
-</body>
 <script>
     $("#registrateButton").on("click", function(){
         let phoneNumber = $("#phoneNumber").val();
         let firstName = $("#firstName").val();
         let secondName = $("#secondName").val();
         let password = $("#password").val();
-        if(phoneNumber === ""|| firstName === ""|| secondName === ""|| password === ""){
+        let repeatingPassword = $("#repeatingPassword").val();
+        if (repeatingPassword !== password){
+            $("#wrongRepeatingPassword").css("visibility", "visible");
+            return
+        }
+        if(phoneNumber === "" || firstName === ""|| secondName === "" || password === ""){
             $("#errorRequiredFields").css("visibility", "visible");
             return
         }
-        
         $.ajax({
             url: "/api/v1/register-user",
             method: "POST",
