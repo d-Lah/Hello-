@@ -8,10 +8,10 @@ from first_app.views.login import login
 from first_app.api.user import user_urls
 from first_app.api.post import post_urls
 from first_app.api.comment import comment_urls
-from first_app.views.registrate import registrate
 from first_app.api.file_upload import file_upload
+from first_app.views.registrate import registrate
+from first_app.views.user_posts import user_posts
 from first_app.views.create_post import create_post
-
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -47,6 +47,7 @@ def create_app(test_config=None):
     app.register_blueprint(registrate)
     app.register_blueprint(login)
     app.register_blueprint(create_post)
+    app.register_blueprint(user_posts)
     return app
 
 if __name__=='__main__':

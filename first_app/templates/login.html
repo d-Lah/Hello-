@@ -30,9 +30,11 @@
 
 </body>
 <script type="text/javascript">
+
   $("#loginButton").on('click', function () {
     var phoneNumber = $("#phoneNumber").val();
     var password = $("#password").val();
+    
     if (phoneNumber === "" || password === "") {
       $('#errorRequiredFields').css("visibility", "visible");
       return

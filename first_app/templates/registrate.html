@@ -25,11 +25,13 @@
     <p style="visibility: hidden;" id="phoneNumberExist">Phone number exist</p>
 <script>
     $("#registrateButton").on("click", function(){
+
         let phoneNumber = $("#phoneNumber").val();
         let firstName = $("#firstName").val();
         let secondName = $("#secondName").val();
         let password = $("#password").val();
         let repeatingPassword = $("#repeatingPassword").val();
+
         if (repeatingPassword !== password){
             $("#wrongRepeatingPassword").css("visibility", "visible");
             return
@@ -44,6 +46,7 @@
             dataType: "json",
             contentType: "application/json;  charset=utf-8",
             data: JSON.stringify({
+                
                 phone_number: phoneNumber,
                 first_name: firstName,
                 second_name: secondName,

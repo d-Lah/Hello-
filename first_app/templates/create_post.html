@@ -9,17 +9,22 @@
 </head>
 
 <body>
+    <a href="/">Main page</a>
+    
     Title: <input type="text" id="title" name="title"><br>
     Body: <input type="text" id="body" name="body"><br>
     File: <input type="file" id="file" multiple><br>
     <input type="button" id="post" name="post" value="Post">
+    
     <p style="visibility: hidden;" id="status">Published</p>
     <p style="visibility: hidden;" id="notTitleOrBody">Not title or body</p>
     <p style="visibility: hidden;" id="wrongFileExtension">Wrong file extension</p>
+
 </body>
 
 <script>
     $("#post").on("click", function(){
+        
         let title = $("#title").val();
         let body = $("#body").val();
         let file = document.getElementById("file").files[0];
@@ -27,13 +32,16 @@
         let token = localStorage.getItem('token');
         let prefix = "Bearer";        
         formData.append("file", file);
+        
         $.ajax({
+       
             url: "/api/v1/create-post",
             method: "POST",
             dataType: "json",
             headers: {"Authorization": `${prefix} ${token}`},
             contentType: "application/json;  charset=utf-8",
             data: JSON.stringify({
+                
                 title: title,
                 body: body,
             }),
@@ -43,11 +51,13 @@
                     return $("#status").css("visibility","visible")
                 }
                 $.ajax({
+        
                     url: "/api/v1/upload-file",
                     method: "POST",
                     processData: false,
                     contentType:false,
                     data: formData,
+        
                     success: function(result){
                         return $("#status").css("visibility","visible")
                     },
@@ -55,7 +65,6 @@
                         return $("#wrongFileExtension").css("visibility", "visible")
                     }
                 });
-                return result.status
             },
             error: function(request,status,error){
                 return $("#notTitleOrBody").css("visibility","visible")

@@ -49,9 +49,8 @@ def user_post_api():
     
     posts = Post.query.filter(Post.deleted==False, Post.author_id==income_author_id).all()
     user_posts = PostSchema(many=True).dump(posts)
-    # file_post = schema.dump(posts)
-    # for post in user_posts:
-    return {"file":user_posts}, 200
+
+    return {"file": user_posts}, 200
 
 @post_urls.route("/api/v1/delete-post/delete/<int:post_id>",
                  methods=["DELETE"])

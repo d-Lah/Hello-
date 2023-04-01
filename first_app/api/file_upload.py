@@ -4,6 +4,7 @@ from flask import request, Blueprint
 from first_app.models import FileUpload
 from werkzeug.utils import secure_filename
 from first_app.config import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
+
 file_upload = Blueprint("file_upload",__name__)
 @file_upload.route("/api/v1/upload-file",
                    methods=["POST"])
@@ -35,4 +36,3 @@ def files_upload():
         
         return {"status":"Uploaded",
                "id": file.id}
-    
