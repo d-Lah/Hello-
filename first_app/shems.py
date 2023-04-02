@@ -37,7 +37,7 @@ class PostSchema(ma.Schema):
     class Meta:
         model = Post
         load_instance = True
-
+    id = fields.Int()
     author_id = fields.Int()
     user_name = fields.Str()
     created = fields.DateTime()
@@ -45,3 +45,4 @@ class PostSchema(ma.Schema):
     title = fields.Str()
     deleted = fields.Bool()
     file = fields.Nested(FileUploadSchema, many=True)
+    comments = fields.Nested(CommentSchema, many=True)

@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <a href="/">Main page</a>
+    <a href="/">Main page</a><br>
     
     Title: <input type="text" id="title" name="title"><br>
     Body: <input type="text" id="body" name="body"><br>
@@ -25,51 +25,49 @@
 <script>
     $("#post").on("click", function(){
         
+        let token = localStorage.getItem('token');
+        let prefix = "Bearer";        
         let title = $("#title").val();
         let body = $("#body").val();
         let file = document.getElementById("file").files[0];
         let formData = new FormData();
-        let token = localStorage.getItem('token');
-        let prefix = "Bearer";        
         formData.append("file", file);
-        
-        $.ajax({
-       
-            url: "/api/v1/create-post",
-            method: "POST",
-            dataType: "json",
-            headers: {"Authorization": `${prefix} ${token}`},
-            contentType: "application/json;  charset=utf-8",
-            data: JSON.stringify({
-                
-                title: title,
-                body: body,
-            }),
-            success: function(result){
-                formData.append("post_id", result.post_id)
-                if (!file){
-                    return $("#status").css("visibility","visible")
-                }
-                $.ajax({
-        
-                    url: "/api/v1/upload-file",
-                    method: "POST",
-                    processData: false,
-                    contentType:false,
-                    data: formData,
-        
-                    success: function(result){
-                        return $("#status").css("visibility","visible")
-                    },
-                    error: function(request,status,error){
-                        return $("#wrongFileExtension").css("visibility", "visible")
+        if(token){        
+            $.ajax({      
+                url: "/api/v1/create-post",
+                method: "POST",
+                dataType: "json",
+                headers: {"Authorization": `${prefix} ${token}`},
+                contentType: "application/json;  charset=utf-8",
+                data: JSON.stringify({
+                    // 
+                    title: title,
+                    body: body,
+                }),
+                success: function(result){
+                    formData.append("post_id", result.post_id);
+                    if (!file){
+                        return $("#status").css("visibility","visible");
                     }
-                });
-            },
-            error: function(request,status,error){
-                return $("#notTitleOrBody").css("visibility","visible")
-            }
-        });
+                    $.ajax({
+                        url: "/api/v1/upload-file",
+                        method: "POST",
+                        processData: false,
+                        contentType:false,
+                        data: formData,
+                        success: function(result){
+                            return $("#status").css("visibility","visible");
+                        },
+                        error: function(request,status,error){
+                            return $("#wrongFileExtension").css("visibility", "visible");
+                        }
+                    });
+                },
+                error: function(request,status,error){
+                    return $("#notTitleOrBody").css("visibility","visible");
+                }   
+            });
+        }
     })
 </script>
 </html>

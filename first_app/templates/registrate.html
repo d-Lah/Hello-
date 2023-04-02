@@ -23,6 +23,7 @@
     <p style="visibility: hidden;" id="errorRequiredFields">Required fields is empty</p>
     <p style="visibility: hidden;" id="wrongRepeatingPassword">Wrong repeating password</p>
     <p style="visibility: hidden;" id="phoneNumberExist">Phone number exist</p>
+
 <script>
     $("#registrateButton").on("click", function(){
 
@@ -56,7 +57,7 @@
                 top.location.href = "/login"    
             },
             error: function(request, status, error){
-                $("#phoneNumberExist").css("visibiliti", "visible");
+                $("#phoneNumberExist").css("visibility", "visible");
             }
         });
     });

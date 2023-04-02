@@ -18,10 +18,7 @@
         <input style="visibility: hidden;" type="button" id="logOut" name="logOut" value="Log out">
     </header> 
     
-    <h1 id="textHeading">My First Heading</h1>
-    <p id="textParagraph">My first paragraph.</p>
-
-    <input type="text" name="input" id="changeTextInput">
+    <p id="errorUserToken" style="visibility: hidden; color: crimson;">User doesn't login</p>
 
 </body>
 
@@ -29,32 +26,28 @@
     let token = localStorage.getItem('token');
     let prefix = "Bearer";
     if (token){
+        
         $( "#loginPageLink").css( "visibility", "hidden" );
         $( "#registerPageLink").css( "visibility", "hidden" );
         $("#createPost").css("visibility","visible")
         $("#userPosts").css("visibility","visible")
         $("#logOut").css("visibility","visible");
+        
         $.ajax({
             url: "/api/v1/user-info",
             method: "GET",
             headers: {"Authorization": `${prefix} ${token}`},
             success: function(result){
                 $("#userFullName").text(result.info);
+            },
+            error: function(request, statusCode, error){
+                $("#errorUserToken").css("visibility", "visible")
             }
         })
     }
     $("#logOut").on("click", function(){
         localStorage.clear();
         location.reload();
-    });
-</script>
-
-<script type="text/javascript">
-    $( "#changeTextInput" ).on('input', function() {
-        console.log(this);
-        var incomeText = $(this).val();
-        $( "#textHeading" ).text(incomeText);
-        $( "#textParagraph" ).text(incomeText);
     });
 </script>
 </html>

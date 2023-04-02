@@ -49,8 +49,8 @@ def user_post_api():
     
     posts = Post.query.filter(Post.deleted==False, Post.author_id==income_author_id).all()
     user_posts = PostSchema(many=True).dump(posts)
-
-    return {"file": user_posts}, 200
+    
+    return {"post": user_posts}, 200
 
 @post_urls.route("/api/v1/delete-post/delete/<int:post_id>",
                  methods=["DELETE"])
@@ -61,7 +61,7 @@ def delete_post_api(post_id):
     author_id = g.user_id
     post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
     if not post:
-        return{"error":"Wrong post_id or author_id"},400
+        return{"error":"Wrong post id"},400
     
     post.deleted = 1
     db.session.add(post)
@@ -81,7 +81,7 @@ def update_post_api(post_id):
 
     post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
     if not post:
-        return{"error":"Wrong post_id"},400
+        return{"error":"Wrong post id"},400
     
     post.title = update_title
     post.body = update_body
@@ -99,11 +99,7 @@ def post_comments_api(post_id):
     post = Post.query.filter(Post.deleted== False,
                              Post.id == post_id).first()
     if not post:
-        return{"error":"Wrong post_id"},400
-    
-    post_comments = Comment.query.filter(Comment.post_id == post_id,
-                                       Comment.deleted == False).all()
-    comments = schema_comment.dump(post_comments)
-    post = PostSchema().dump(post_comments)
-    return {"post":post,
-            "comments": comments}, 200
+        return{"error":"Wrong post id"},400
+        
+    post_comments = PostSchema().dump(post)
+    return {"post":post_comments}, 200

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <a href="/"> Main page </a><br>
+    Text: <input type="text" id="text" name="text"><br>
+    <input type="button" id="createCommentButton" name="createCommentButton" value="Create comment"><br>
+    
+    <p style="visibility: hidden;" id="NotText">Not text</p>
+    <p style="visibility: hidden;" id="wrongPostId">Wrong post id</p>
+</body>
+<script>
+
+    let token = localStorage.getItem('token');
+    let prefix = "Bearer";
+    let urlPathName = window.location.pathname;
+    let splitUrlPathName = urlPathName.split("/");
+    let post_id = splitUrlPathName[3];
+    if(token){
+        $("#createCommentButton").on("click", function(){
+            let text = $("#text").val();
+            $.ajax({
+                    url: `/api/v1/create-comment/post/${post_id}`,
+                    method: "POST",
+                    dataType: "json",
+                    headers: {"Authorization": `${prefix} ${token}`},
+                    contentType: "application/json;  charset=utf-8",
+                    data: JSON.stringify({
+                        text: text
+                    }),
+                    success: function(result){
+                        top.location.href = `/post-comments/post/${post_id}`
+                    },
+                    error: function(result, request, status, error){
+                        console.log(result)
+                        if(result.responseJSON.error){
+                            $("#NotText").css("visibility", "visible");
+                        }
+                        if(result.responseJSON.wrong_post_id){
+                            $("#wrongPostId").css("visibility", "visible")
+                        }
+                    }
+            })
+        })
+    }
+</script>
+</html>

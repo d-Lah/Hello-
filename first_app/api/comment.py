@@ -20,8 +20,12 @@ def create_comment_api(post_id):
     comments_post_id = post_id
     text = data.get("text")
     created = datetime.datetime.now()
+    post = Post.query.filter(Post.id==post_id).first()
+    if not post:
+        return{"wrong_post_id":"Wrong post id"},400
+
     if not text:    
-        return {"error": "немає text"},400
+        return {"error": "Not text"},400
     
     comment = Comment(author_id,
                     comments_post_id,

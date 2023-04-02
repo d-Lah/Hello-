@@ -22,7 +22,7 @@ def registrate_user_api():
     if exists:
         return{"error:":"Phone number already exists"}, 400
     if not phone_number or not first_name:
-        return{"error":"Немає номеру телефона, або ім'я"}, 400
+        return{"error":"Not phone number or name"}, 400
     
     new_user = User(phone_number,
                     first_name,
@@ -103,7 +103,7 @@ def change_password():
     if not check_password_hash(user.password,old_password):
         return{"error":"Wrong old password"},400
     if not new_password:
-        return{"error":"Немає нового паролю"},400
+        return{"error":"Not new password"},400
     
     user.password = generate_password_hash(new_password) 
     db.session.commit()

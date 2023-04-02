@@ -44,6 +44,7 @@ class Post(db.Model):
     title = Column(Text(), unique=False)
     deleted = Column(Boolean(),default=False)
     file = relationship("FileUpload", backref="post")
+    comments = relationship("Comment", backref = "post")
     def __init__(self,author_id=None,
                  created=None, title=None,
                  body=None,
