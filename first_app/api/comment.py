@@ -1,8 +1,10 @@
 import datetime
 from first_app.db import db
+from marshmallow import ValidationError
 from first_app.config import SECRET_KEY
 from .login_required import login_required
 from first_app.models import Post, Comment, User
+from first_app.shems import PostSchema, CommentSchema
 from flask import Flask, g, request, render_template, flash, Blueprint
 
 comment_urls = Blueprint("comment",__name__)
@@ -18,22 +20,25 @@ def create_comment_api(post_id):
     author_id = g.user_id
     author_name = user.first_name
     comments_post_id = post_id
-    text = data.get("text")
-    created = datetime.datetime.now()
-    post = Post.query.filter(Post.id==post_id).first()
-    if not post:
-        return{"wrong_post_id":"Wrong post id"},400
-
-    if not text:    
-        return {"error": "Not text"},400
+    # text = data.get("text")
     
-    comment = Comment(author_id,
-                    comments_post_id,
-                    created,
-                    text,
-                    user_name=author_name)
-    db.session.add(comment)
-    db.session.commit()    
+    error = CommentSchema().validate({"text": data["text"], "post_id": comments_post_id})
+
+    if error:
+        return {"error": error}
+    # if error:
+    #     return {"error": error}
+    created = datetime.datetime.now()
+    # if not text:    
+    #     return {"error": "Not text"},400
+    
+    # new_comment = Comment(author_id,
+    #                 comments_post_id,
+    #                 created,
+    #                 text,
+    #                 user_name=author_name)
+    # db.session.add(new_comment)
+    # db.session.commit()    
     
     return {"status":"Published"}, 200
 

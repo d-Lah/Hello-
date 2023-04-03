@@ -14,6 +14,8 @@ from first_app.views.user_posts import user_posts
 from first_app.views.create_post import create_post
 from first_app.views.create_comment import create_comment
 from first_app.views.post_comments import post_comments
+from first_app.views.user_info_edit import user_info_edit
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # /home/im/Hello-/first_app/ -> Dynamic os.path.join(basedir,'data.sqlite')
@@ -51,6 +53,7 @@ def create_app(test_config=None):
     app.register_blueprint(user_posts)
     app.register_blueprint(create_comment)
     app.register_blueprint(post_comments)
+    app.register_blueprint(user_info_edit)
     return app
 
 if __name__=='__main__':

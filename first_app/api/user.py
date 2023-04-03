@@ -72,7 +72,6 @@ def user_profile_edit():
     new_phone_number = data.get("phone_number")
     new_first_name = data.get("first_name")
     new_second_name = data.get("second_name")
-    
     exists = db.session.query(User.query.filter(User.phone_number==new_phone_number).exists()).scalar()
     if exists:
         return{"error:":"Phone number already exists"}, 400
@@ -84,9 +83,10 @@ def user_profile_edit():
     user.phone_number = new_phone_number
     user.first_name = new_first_name
     user.second_name = new_second_name
+    # db.session.add(user)
     db.session.commit()
     
-    return{"status":"Update"},400
+    return{"status":"Update"},200
 
 @user_urls.route("/api/v1/user-info/change-password",
                   methods=['PUT'])

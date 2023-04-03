@@ -2,6 +2,7 @@ import datetime
 from flask import jsonify
 from first_app.db import db
 from first_app.config import SECRET_KEY
+from marshmallow import ValidationError
 from .login_required import login_required
 from first_app.shems import PostSchema, CommentSchema
 from first_app.models import Post, FileUpload, Comment, User
@@ -22,18 +23,20 @@ def create_post_api():
     author_id = g.user_id
     author_name = user.first_name
     data = request.json
-    title = data.get('title')
-    body = data.get('body')
     current_datetime = datetime.datetime.today() 
     
-    if not title or not body:    
-        return {"error": "Not title or body"},400
+    try:
+        post = PostSchema().load(data)
+    except ValidationError:
+        return {"error": "Not title or body"}, 400
 
-    new_post = Post(author_id,
-                    current_datetime,
-                    title,
-                    body,
-                    user_name=author_name)
+
+    new_post = Post(author_id = author_id,
+                    user_name=author_name,
+                    title=post['title'],
+                    body=post['body'],
+                    current_datetime = current_datetime)
+    
     db.session.add(new_post)
     db.session.commit()    
     
@@ -81,7 +84,7 @@ def update_post_api(post_id):
 
     post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
     if not post:
-        return{"error":"Wrong post id"},400
+        return{"error":"Wrong post id"},404
     
     post.title = update_title
     post.body = update_body
@@ -99,7 +102,7 @@ def post_comments_api(post_id):
     post = Post.query.filter(Post.deleted== False,
                              Post.id == post_id).first()
     if not post:
-        return{"error":"Wrong post id"},400
+        return{"wrong_post_id":"Wrong post id"},400
         
     post_comments = PostSchema().dump(post)
     return {"post":post_comments}, 200
