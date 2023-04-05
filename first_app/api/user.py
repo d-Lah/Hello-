@@ -98,14 +98,17 @@ def change_password():
     new_password = data.get("new_password")
     
     user = User.query.filter(User.id==g.user_id).first()
+    
     if not user: 
         return{"error":"Request data isn't yours"},400
+    
     if not check_password_hash(user.password,old_password):
-        return{"error":"Wrong old password"},400
+        return{"error_old_password":"Wrong old password"},400
+    
     if not new_password:
         return{"error":"Not new password"},400
     
     user.password = generate_password_hash(new_password) 
     db.session.commit()
     
-    return{"status":"Update"},200
+    return{"status":"Changed"},200

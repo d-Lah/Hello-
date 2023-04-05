@@ -16,6 +16,7 @@ from first_app.views.update_post import update_post
 from first_app.views.post_comments import post_comments
 from first_app.views.create_comment import create_comment
 from first_app.views.user_info_edit import user_info_edit
+from first_app.views.change_password import change_password
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -25,7 +26,7 @@ UPLOAD_FOLDER = os.path.join(basedir, "uploads")
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, template_folder='templates', instance_relative_config=True)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'instance/')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'data.sqlite')
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.config.from_mapping(SECRET_KEY='dev')
     
@@ -56,6 +57,7 @@ def create_app(test_config=None):
     app.register_blueprint(post_comments)
     app.register_blueprint(user_info_edit)
     app.register_blueprint(update_post)
+    app.register_blueprint(change_password)
     return app
 
 if __name__=='__main__':

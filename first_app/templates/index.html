@@ -12,6 +12,7 @@
         <a href="/create-post" style="visibility: hidden;" id="createPost"> Create post </a><br>
         <a href="/user-posts" style="visibility: hidden;" id="userPosts"> User Post </a><br>
         <a href="/user-info/edit" style="visibility: hidden;" id="editUserInfo"> Edit user info </a><br>
+        <a href="/user-info/change-password" style="visibility: hidden;" id="changePassword"> Change password </a><br>
         <hr>
     </div>
     
@@ -32,10 +33,11 @@
         
         $( "#loginPageLink").css( "visibility", "hidden" );
         $( "#registerPageLink").css( "visibility", "hidden" );
-        $("#createPost").css("visibility","visible")
-        $("#userPosts").css("visibility","visible")
+        $("#createPost").css("visibility","visible");
+        $("#userPosts").css("visibility","visible");
         $("#logOut").css("visibility","visible");
-        $("#editUserInfo").css("visibility", "visible")
+        $("#editUserInfo").css("visibility", "visible");
+        $("#changePassword").css("visibility", "visible");
         $.ajax({
             url: "/api/v1/user-info",
             method: "GET",
@@ -44,7 +46,7 @@
                 $("#userFullName").text(result.info);
             },
             error: function(request, statusCode, error){
-                $("#errorUserToken").css("visibility", "visible")
+                $("#errorUserToken").css("visibility", "visible");
             }
         })
     }
