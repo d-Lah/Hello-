@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <title>Update post</title>
+</head>
+<body>
+
+    <a href="/">Main page</a><br>
+    <a href="/user-posts">User posts</a><br>
+    <hr>
+
+    New Title: <input type="text" id="title" name="title"><br>
+    New Body: <input type="text" id="body" name="body"><br>
+    New File: <input type="file" id="file" multiple><br>
+    
+    <input type="button" id="update" name="update" value="Update"><br>
+    
+    <p style="visibility: hidden;" id="status">Update</p>
+    <p style="visibility: hidden;" id="notTitleOrBody">Not title or body</p>
+    <p style="visibility: hidden;" id="wrongFileExtension">Wrong file extension</p>
+    <p style="visibility: hidden;" id="wrongPostId">Wrong post id</p>
+</body>
+<script>
+    $("#update").on("click", function(){
+        
+        let urlPathName = window.location.pathname;
+        let splitUrlPathName = urlPathName.split("/");
+        let postId = splitUrlPathName[3];
+        
+        let token = localStorage.getItem('token');
+        let prefix = "Bearer";  
+        
+        let newTitle = $("#title").val();
+        let newBody = $("#body").val();
+        let newFile = $("file").val();
+        let file = document.getElementById("file").files[0];
+        
+        let formData = new FormData();
+        formData.append("file", file);
+        
+        if(newTitle === "" || newBody === ""){
+            return $("#notTitleOrBody").css("visibility", "visible");
+            return;
+        }
+
+        if(token){        
+
+            $.ajax({
+                url: "/api/v1/upload-file",
+                method: "POST",
+                processData: false,
+                contentType:false,
+                data: formData,
+                success: function(result){
+                    file_id = result.id
+                    $.ajax({      
+                        url: `/api/v1/update-post/update/${postId}`,
+                        method: "PUT",
+                        dataType: "json",
+                        headers: {"Authorization": `${prefix} ${token}`},
+                        contentType: "application/json;  charset=utf-8",
+                        data: JSON.stringify({
+                            update_title: newTitle,
+                            update_body: newBody,
+                            update_file_id: file_id
+                        }),
+                        success: function(result){
+                            return $("#status").css("visibility", "visible");        
+                        }
+                    })  
+                },
+                error: function(request,status,error){
+                    return $("#wrongFileExtension").css("visibility", "visible");
+                }
+            });
+        }
+    })    
+</script>
+</html>

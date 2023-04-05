@@ -34,25 +34,35 @@
                     let title = post[index]["title"];
                     let body = post[index]["body"];
                     let created = post[index]["created"];
+                    let image;
+                    let deleted;
+                    if(post[index]["file"] !== null){
+                        image = post[index]["file"]["url"];
+                        deleted = post[index]["file"]["deleted"];
+                    }    
                     $("#post").append(
                             `<hr>
-                            <p> Author full name:${userName}<br>
+                            <p>User name:${userName}<br>
                             Title :${title}<br>
                             Body :${body}<br>
-                            created:${created}</p>`
-                            );
-                        $.each(post[index]["file"], function(fileIndex){
-                            let image = post[index]["file"][fileIndex]["url"];
-                            $("#post").append(`<img src="/static/uploads/${image}" width="250" height="250"><br>`);
-                        });
+                            created:${created}</p>
+                            `);
+                    if (image){        
+                        $("#post").append(
+                        `<img src="/static/uploads/${image}" widht="250" height="250"><br>`
+                        )
+                    }
                     $("#post").append(
                         `<a href="/create-comment/post/${post_id}">Comment</a><br>
-                        <a href="/post-comments/post/${post_id}">Comments</a><br>`
+                        <a href="/post-comments/post/${post_id}">Comments</a><br>
+                        <a href = "/user-posts/update/${post_id}">Update post</a><br>`
                     );
-                
-                    });
+                });
             }
-        })
-    }
+            })
+                
+                    
+            }
+    
 </script>
 </html>

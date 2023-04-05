@@ -10,6 +10,7 @@
 <body>
     <div>
         <a href="/"> Main page </a>
+        <hr>
     </div>
     
     PhoneNumber: <input type="text" id="phoneNumber" name="phoneNumber"><br>
@@ -23,11 +24,14 @@
 </body>
 <script>
     $("#registrateButton").on("click", function(){
+        
         let token = localStorage.getItem('token');
         let prefix = "Bearer";
+        
         let phoneNumber = $("#phoneNumber").val();
         let firstName = $("#firstName").val();
         let secondName = $("#secondName").val();
+        
         if(token){
             if(phoneNumber === "" || firstName === ""|| secondName === ""){
                 $("#errorRequiredFields").css("visibility", "visible");

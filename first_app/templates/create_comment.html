@@ -9,45 +9,50 @@
 </head>
 <body>
     <a href="/"> Main page </a><br>
+    <a href="/user-posts">User Posts</a><br>
+    <hr>
     Text: <input type="text" id="text" name="text"><br>
     <input type="button" id="createCommentButton" name="createCommentButton" value="Create comment"><br>
     
     <p style="visibility: hidden;" id="NotText">Not text</p>
     <p style="visibility: hidden;" id="wrongPostId">Wrong post id</p>
 </body>
-<script>
-
-    let token = localStorage.getItem('token');
-    let prefix = "Bearer";
-    let urlPathName = window.location.pathname;
-    let splitUrlPathName = urlPathName.split("/");
-    let post_id = splitUrlPathName[3];
-    if(token){
+<script>    
         $("#createCommentButton").on("click", function(){
+            
+            let token = localStorage.getItem('token');
+            let prefix = "Bearer";
+            
+            let urlPathName = window.location.pathname;
+            let splitUrlPathName = urlPathName.split("/");
+            let postId = splitUrlPathName[3];
+            
             let text = $("#text").val();
-            $.ajax({
-                    url: `/api/v1/create-comment/post/${post_id}`,
-                    method: "POST",
-                    dataType: "json",
-                    headers: {"Authorization": `${prefix} ${token}`},
-                    contentType: "application/json;  charset=utf-8",
-                    data: JSON.stringify({
-                        text: text
-                    }),
-                    success: function(result){
-                        top.location.href = `/post-comments/post/${post_id}`
-                    },
-                    error: function(result, request, status, error){
-                        console.log(result)
-                        if(result.responseJSON.error){
-                            $("#NotText").css("visibility", "visible");
+            if(text===""){
+                $("#NotText").css("visibility", "visible");
+                return
+            }
+            
+            if(token){
+                $.ajax({
+                        url: `/api/v1/create-comment/post/${postId}`,
+                        method: "POST",
+                        dataType: "json",
+                        headers: {"Authorization": `${prefix} ${token}`},
+                        contentType: "application/json;  charset=utf-8",
+                        data: JSON.stringify({
+                            text: text
+                        }),
+                        success: function(result){
+                            top.location.href = `/post-comments/post/${postId}`
+                        },
+                        error: function(result, request, status, error){
+
+                            if(result.responseJSON.wrong_post_id){
+                                $("#wrongPostId").css("visibility", "visible");
+                            }
                         }
-                        if(result.responseJSON.wrong_post_id){
-                            $("#wrongPostId").css("visibility", "visible")
-                        }
-                    }
-            })
-        })
-    }
+                })}
+        });
 </script>
 </html>

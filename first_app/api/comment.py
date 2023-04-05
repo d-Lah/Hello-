@@ -20,25 +20,27 @@ def create_comment_api(post_id):
     author_id = g.user_id
     author_name = user.first_name
     comments_post_id = post_id
-    # text = data.get("text")
-    
-    error = CommentSchema().validate({"text": data["text"], "post_id": comments_post_id})
-
-    if error:
-        return {"error": error}
-    # if error:
-    #     return {"error": error}
+    text = data.get("text")
     created = datetime.datetime.now()
-    # if not text:    
-    #     return {"error": "Not text"},400
     
-    # new_comment = Comment(author_id,
-    #                 comments_post_id,
-    #                 created,
-    #                 text,
-    #                 user_name=author_name)
-    # db.session.add(new_comment)
-    # db.session.commit()    
+    error = CommentSchema().validate({"text": text, "post_id": comments_post_id})
+    
+    error_post_id = error.get("post_id")
+    error_text = error.get("text")
+    
+    if error_post_id:
+        return error_post_id, 404
+    
+    if error_text: 
+        return error_text, 400
+    
+    new_comment = Comment(author_id,
+                    comments_post_id,
+                    created,
+                    text,
+                    user_name=author_name)
+    db.session.add(new_comment)
+    db.session.commit()    
     
     return {"status":"Published"}, 200
 

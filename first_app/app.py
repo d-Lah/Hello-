@@ -12,8 +12,9 @@ from first_app.api.file_upload import file_upload
 from first_app.views.registrate import registrate
 from first_app.views.user_posts import user_posts
 from first_app.views.create_post import create_post
-from first_app.views.create_comment import create_comment
+from first_app.views.update_post import update_post
 from first_app.views.post_comments import post_comments
+from first_app.views.create_comment import create_comment
 from first_app.views.user_info_edit import user_info_edit
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -24,7 +25,7 @@ UPLOAD_FOLDER = os.path.join(basedir, "uploads")
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, template_folder='templates', instance_relative_config=True)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'data.sqlite')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'instance/')
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.config.from_mapping(SECRET_KEY='dev')
     
@@ -54,6 +55,7 @@ def create_app(test_config=None):
     app.register_blueprint(create_comment)
     app.register_blueprint(post_comments)
     app.register_blueprint(user_info_edit)
+    app.register_blueprint(update_post)
     return app
 
 if __name__=='__main__':

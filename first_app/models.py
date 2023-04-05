@@ -9,6 +9,7 @@ from sqlalchemy import (Column,
                         Boolean,
                         ForeignKey)
 from sqlalchemy.orm import relationship
+
 class User(db.Model):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
@@ -31,8 +32,22 @@ class User(db.Model):
     
     def user_info(self):
         return f"{self.first_name} {self.second_name}, {self.phone_number}"
+    
     def full_name(self):
         return f"{self.first_name} {self.second_name}"
+
+class FileUpload(db.Model):
+    __tablename__ = 'file_upload'
+    id = Column(Integer,primary_key=True)
+    url = Column(String())
+    post = relationship("Post", back_populates="file")
+    deleted = Column(Boolean(), default=False)
+    def __init__(self, url=None,
+                 post_id=None,
+                 deleted=None):
+        self.url = url
+        self.post_id = post_id
+        self.deleted = deleted
 
 class Post(db.Model):
     __tablename__= 'post'
@@ -43,8 +58,10 @@ class Post(db.Model):
     body = Column(Text(), unique=False)
     title = Column(Text(), unique=False)
     deleted = Column(Boolean(),default=False)
-    # file_id = Column(Integer, ForeignKey("file_upload.id"), nullable=False)
-    file = relationship("FileUpload", backref="post")
+
+    file_id = Column(Integer, ForeignKey("file_upload.id"))
+    file = relationship("FileUpload", back_populates="post", primaryjoin=FileUpload.id==file_id)
+    
     comments = relationship("Comment", backref = "post")
     def __init__(self,author_id=None,
                  created=None, title=None,
@@ -62,7 +79,7 @@ class Post(db.Model):
         self.user_name = user_name
     def __repr__(self):
         return f'<Author id {self.author_id}>'
-    
+
 class Comment(db.Model):
     __tablename__='comments'
     id = Column(Integer,primary_key=True)
@@ -88,12 +105,3 @@ class Comment(db.Model):
         self.user_name = user_name
     def __repr__(self):
         return f'<Author id {self.author_id}>'
-
-class FileUpload(db.Model):
-    __tablename__ = 'file_upload'
-    id = Column(Integer,primary_key=True)
-    post_id = Column(Integer, ForeignKey("post.id"), nullable=False)
-    url = Column(String())
-    def __init__(self, url, post_id):
-        self.url = url
-        self.post_id = post_id

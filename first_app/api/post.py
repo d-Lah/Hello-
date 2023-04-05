@@ -24,21 +24,24 @@ def create_post_api():
     author_name = user.first_name
     data = request.json
     current_datetime = datetime.datetime.today() 
-    
-    try:
-        post = PostSchema().load(data)
-    except ValidationError:
-        return {"error": "Not title or body"}, 400
+    title = data.get("title")
+    body = data.get("body")
+    file_id = data.get("file_id")
+
+    error = PostSchema().validate({"title":data["title"], "body": data["body"]})
+    if error:
+        return {"error": error}, 400
 
 
     new_post = Post(author_id = author_id,
                     user_name=author_name,
-                    title=post['title'],
-                    body=post['body'],
-                    current_datetime = current_datetime)
+                    title=title,
+                    body=body,
+                    file_id=file_id,
+                    created= current_datetime)
     
     db.session.add(new_post)
-    db.session.commit()    
+    db.session.commit()
     
     return {"status":"Published",
             "post_id": new_post.id}, 200
@@ -79,16 +82,19 @@ def update_post_api(post_id):
     data = request.json
     update_title = data.get("update_title")
     update_body = data.get("update_body")
+    update_file_id = data.get("update_file_id")
     update_datatime = datetime.datetime.now()
     author_id = g.user_id
 
     post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
+    
     if not post:
         return{"error":"Wrong post id"},404
     
     post.title = update_title
     post.body = update_body
     post.datatime = update_datatime
+    post.file_id = update_file_id
     db.session.add(post)
     db.session.commit()
     

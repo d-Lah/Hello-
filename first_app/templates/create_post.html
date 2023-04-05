@@ -10,7 +10,8 @@
 
 <body>
     <a href="/">Main page</a><br>
-    
+    <hr>
+
     Title: <input type="text" id="title" name="title"><br>
     Body: <input type="text" id="body" name="body"><br>
     File: <input type="file" id="file" multiple><br>
@@ -24,50 +25,52 @@
 
 <script>
     $("#post").on("click", function(){
-        
+
         let token = localStorage.getItem('token');
         let prefix = "Bearer";        
+        
         let title = $("#title").val();
         let body = $("#body").val();
         let file = document.getElementById("file").files[0];
+        
         let formData = new FormData();
         formData.append("file", file);
-        if(token){        
-            $.ajax({      
-                url: "/api/v1/create-post",
-                method: "POST",
-                dataType: "json",
-                headers: {"Authorization": `${prefix} ${token}`},
-                contentType: "application/json;  charset=utf-8",
-                data: JSON.stringify({
-                    // 
-                    title: title,
-                    body: body,
-                }),
-                success: function(result){
-                    formData.append("post_id", result.post_id);
-                    if (!file){
-                        return $("#status").css("visibility","visible");
-                    }
-                    $.ajax({
-                        url: "/api/v1/upload-file",
-                        method: "POST",
-                        processData: false,
-                        contentType:false,
-                        data: formData,
-                        success: function(result){
-                            return $("#status").css("visibility","visible");
-                        },
-                        error: function(request,status,error){
-                            return $("#wrongFileExtension").css("visibility", "visible");
-                        }
-                    });
-                },
-                error: function(request,status,error){
-                    return $("#notTitleOrBody").css("visibility","visible");
-                }   
-            });
+        
+        if(title === "" || body === ""){
+            return $("#notTitleOrBody").css("visibility", "visible");
+            return;
         }
-    })
+        if(token){        
+                $.ajax({
+                    url: "/api/v1/upload-file",
+                    method: "POST",
+                    processData: false,
+                    contentType:false,
+                    data: formData,
+                    success: function(result){
+                        file_id = result.id
+                        $.ajax({      
+                            url: "/api/v1/create-post",
+                            method: "POST",
+                            dataType: "json",
+                            headers: {"Authorization": `${prefix} ${token}`},
+                            contentType: "application/json;  charset=utf-8",
+                            data: JSON.stringify({
+                                title: title,
+                                body: body,
+                                file_id: file_id
+                            }),
+                            success: function(result){
+                                return $("#status").css("visibility", "visible");        
+                            }
+                        });  
+                    },
+                    error: function(request,status,error){
+                        return $("#wrongFileExtension").css("visibility", "visible");
+                    }
+                });
+            }
+                
+        });
 </script>
 </html>

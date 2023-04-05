@@ -31,12 +31,14 @@ class CommentSchema(ma.Schema):
     def validate_post_id(self, post_id):
         exists = db.session.query(Post.query.filter(Post.id==post_id).exists()).scalar()
         if not exists:
-            raise ValidationError({"error": "Wrong post id"}, status_code=404)
+            raise ValidationError({"error": "Wrong post id"})
         
     @validates("text")
     def validate_text(self, text):
         if not text:
-            raise ValidationError({"error": "Not text"}, status_code=400)
+            raise ValidationError({"error": "Not text"})
+    
+        
 
 class FileUploadSchema(ma.Schema):
     class Meta:
@@ -46,7 +48,13 @@ class FileUploadSchema(ma.Schema):
     id = fields.Int()
     url = fields.Str()
     post_id = fields.Int()
+    deleted = fields.Bool()
 
+    @validates("id")
+    def validate_id(self, id):
+        exists = db.session.query(FileUpload.query.filter(FileUpload.id==id).exists()).scalar()
+        if not exists:
+            raise ValidationError({"error": "Wrong image id"})
 class PostSchema(ma.Schema):
     class Meta:
         model = Post
@@ -59,10 +67,10 @@ class PostSchema(ma.Schema):
     body = fields.Str()
     title = fields.Str()
     deleted = fields.Bool()
-    file = fields.Nested(FileUploadSchema(only=("id","url")), many=True)
+    file = fields.Nested(FileUploadSchema)
     comments = fields.Nested(CommentSchema, many=True)
 
     @validates_schema
-    def validate_title_or_body(self, title, body):
-        if not title or not body:
-            raise ValidationError("not title or body")
+    def validate_title_or_body(self, data, **kwargs):
+        if not data["title"] or not data["body"]:
+            raise ValidationError({"error":"not title or body"})
