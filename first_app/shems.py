@@ -37,9 +37,11 @@ class CommentSchema(ma.Schema):
     def validate_text(self, text):
         if not text:
             raise ValidationError({"error": "Not text"})
-    
-        
-
+    @validates("id")
+    def validate_id(self, id):
+        comment = Comment.query.filter(Comment.id==id).first()
+        if not comment:
+            raise ValidationError({"error":"Wrong comment id"})
 class FileUploadSchema(ma.Schema):
     class Meta:
         model = FileUpload

@@ -32,7 +32,10 @@
         let firstName = $("#firstName").val();
         let secondName = $("#secondName").val();
         
-        if(token){
+        if (!token) {
+            $("#notToken").css("visibility", "visible");
+            return;
+        }
             if(phoneNumber === "" || firstName === ""|| secondName === ""){
                 $("#errorRequiredFields").css("visibility", "visible");
                 return;
@@ -56,7 +59,7 @@
                 return;
             }
             });
-        }
+        
         });
 </script>
 </html>

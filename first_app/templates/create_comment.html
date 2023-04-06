@@ -8,13 +8,16 @@
     <title>Document</title>
 </head>
 <body>
-    <a href="/"> Main page </a><br>
-    <a href="/user-posts">User Posts</a><br>
+    <div>
+        <a href="/"> Main page </a><br>
+        <a href="/user-posts">User Posts</a><br>
+    </div>
+
     <hr>
     Text: <input type="text" id="text" name="text"><br>
     <input type="button" id="createCommentButton" name="createCommentButton" value="Create comment"><br>
     
-    <p style="visibility: hidden;" id="NotText">Not text</p>
+    <p style="visibility: hidden;" id="notText">Not text</p>
     <p style="visibility: hidden;" id="wrongPostId">Wrong post id</p>
 </body>
 <script>    
@@ -29,11 +32,14 @@
             
             let text = $("#text").val();
             if(text===""){
-                $("#NotText").css("visibility", "visible");
+                $("#notText").css("visibility", "visible");
                 return
             }
             
-            if(token){
+            if (!token) {
+                $("#notToken").css("visibility", "visible");
+                return;
+            }
                 $.ajax({
                         url: `/api/v1/create-comment/post/${postId}`,
                         method: "POST",
@@ -52,7 +58,7 @@
                                 $("#wrongPostId").css("visibility", "visible");
                             }
                         }
-                })}
+                })
         });
 </script>
 </html>

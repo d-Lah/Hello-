@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <title>Update comment</title>
+</head>
+<body>
+    <div>
+        <a href="/"> Main page </a><br>
+        <a href="/user-posts">User Posts</a><br>
+    </div>
+    
+    New text: <input type="text" name="newText" id="newText">
+    <input type="button" value="Update" id="updateComment">
+    
+    <p style="visibility: hidden;" id="status">Update</p>
+    <p style="visibility: hidden;" id="notText">Not text</p>
+    <p style="visibility: hidden;" id="wrongCommentId">Wrong comment id</p>
+    <p style="visibility: hidden;" id="notToken">Request data isn't yours</p>
+</body>
+<script>
+    $("#updateComment").on("click", function(){
+            
+        let token = localStorage.getItem('token');
+        let prefix = "Bearer";
+            
+        let urlPathName = window.location.pathname;
+        let splitUrlPathName = urlPathName.split("/");
+        let commentId = splitUrlPathName[3];
+            
+        let updateText = $("#newText").val();
+        
+        if (!token) {
+            $("#notToken").css("visibility", "visible");
+            return;
+        }
+
+        if(updateText===""){
+            $("#notText").css("visibility", "visible");
+            return
+        }
+        $.ajax({
+            url: `/api/v1/update-comment/update/${commentId}`,
+            method: "PUT",
+            dataType: "json",
+            headers: {"Authorization": `${prefix} ${token}`},
+            contentType: "application/json;  charset=utf-8",
+            data: JSON.stringify({
+                text: updateText
+            }),
+            success: function(result){
+                $("#status").css("visibility", "visible");
+            },
+            error: function(result, request, status, error, responseJSON){
+                if(result.responseJSON.error){
+                    $("#wrongCommentId").css("visibility", "visible")
+                }
+            }
+
+        })
+        
+    })
+</script>
+</html>

@@ -40,7 +40,11 @@
             return $("#notTitleOrBody").css("visibility", "visible");
             return;
         }
-        if(token){        
+        
+        if (!token) {
+            $("#notToken").css("visibility", "visible");
+            return;
+        }        
                 $.ajax({
                     url: "/api/v1/upload-file",
                     method: "POST",
@@ -69,7 +73,7 @@
                         return $("#wrongFileExtension").css("visibility", "visible");
                     }
                 });
-            }
+            
                 
         });
 </script>

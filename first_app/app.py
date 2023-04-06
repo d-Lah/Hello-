@@ -16,11 +16,11 @@ from first_app.views.update_post import update_post
 from first_app.views.post_comments import post_comments
 from first_app.views.create_comment import create_comment
 from first_app.views.user_info_edit import user_info_edit
+from first_app.views.update_comment import update_comment
 from first_app.views.change_password import change_password
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-# /home/im/Hello-/first_app/ -> Dynamic os.path.join(basedir,'data.sqlite')
 UPLOAD_FOLDER = os.path.join(basedir, "uploads")
 
 def create_app(test_config=None):
@@ -58,6 +58,7 @@ def create_app(test_config=None):
     app.register_blueprint(user_info_edit)
     app.register_blueprint(update_post)
     app.register_blueprint(change_password)
+    app.register_blueprint(update_comment)
     return app
 
 if __name__=='__main__':

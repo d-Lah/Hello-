@@ -70,10 +70,12 @@ def update_comment_post_api(comment_id):
     update_datatime = datetime.datetime.now()
     author_id = g.user_id
     
+    error = CommentSchema().validate({"id": comment_id})
+    if error:
+        return{"error":"Wrong comment or author_id"},404
+    
     comment = Comment.query.filter(Comment.id == comment_id,
                                    Comment.author_id == author_id).first()
-    if not comment:
-        return{"error":"Wrong comment or author_id"},400
     
     comment.text = update_text
     comment.datatime = update_datatime

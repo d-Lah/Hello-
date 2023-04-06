@@ -14,7 +14,8 @@
 
     </div>
     <div id="comments">
-
+        <hr>
+        Comments:
     </div>
     <p style="visibility: hidden;" id="wrongPostId">Wrong post id</p>
 </body>
@@ -26,7 +27,10 @@
     let splitUrlPathName = urlPathName.split("/");
     let postId = splitUrlPathName[3];
 
-    if (token){
+    if (!token) {
+            $("#notToken").css("visibility", "visible");
+            return;
+        }
     
         $.ajax({
             url: `/api/v1/post-comments/post/${postId}`,
@@ -63,13 +67,14 @@
                     let userName = comments[index]["user_name"];
                     let text = comments[index]["text"];
                     let created = comments[index]["created"];
-                    
+                    let commentId = comments[index]["id"]
                     $("#comments").append(
                         `<p>
-                            <hr>
                             Author full name:${userName}<br>
                             Text :${text}<br>
-                            created:${created}
+                            created:${created}<br>
+                            <a href="/update-comment/update/${commentId}">Update comment</a>
+                            <hr>
                             </p>`
                     )
                 });
@@ -81,6 +86,6 @@
                 }
             }
         });
-    }
+    
 </script>
 </html>

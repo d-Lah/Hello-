@@ -47,7 +47,10 @@
             return;
         }
 
-        if(token){        
+        if (!token) {
+            $("#notToken").css("visibility", "visible");
+            return;
+        }        
 
             $.ajax({
                 url: "/api/v1/upload-file",
@@ -77,7 +80,7 @@
                     return $("#wrongFileExtension").css("visibility", "visible");
                 }
             });
-        }
+        
     })    
 </script>
 </html>

@@ -29,7 +29,11 @@
 <script type="text/javascript">
     let token = localStorage.getItem('token');
     let prefix = "Bearer";
-    if (token){
+    
+    if (!token) {
+            $("#notToken").css("visibility", "visible");
+            return;
+        }
         
         $( "#loginPageLink").css( "visibility", "hidden" );
         $( "#registerPageLink").css( "visibility", "hidden" );
@@ -49,7 +53,7 @@
                 $("#errorUserToken").css("visibility", "visible");
             }
         })
-    }
+    
     $("#logOut").on("click", function(){
         localStorage.clear();
         location.reload();

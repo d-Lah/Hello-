@@ -18,7 +18,10 @@
     let token = localStorage.getItem('token');
     let prefix = "Bearer";
     
-    if (token){
+    if (!token) {
+            $("#notToken").css("visibility", "visible");
+            return;
+        }
     
         $.ajax({
             url: "/api/v1/user-posts",
@@ -61,8 +64,5 @@
             }
             })
                 
-                    
-            }
-    
 </script>
 </html>
