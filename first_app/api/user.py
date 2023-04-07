@@ -33,6 +33,11 @@ def registrate_user_api():
     
     return {}, 200
 
+def login_user(user):
+    token_data = {"user_id": user.id}
+    access_token = jwt.encode(token_data, SECRET_KEY, algorithm='HS256')
+    return access_token
+
 @user_urls.route("/api/v1/login", methods=['POST'])
 def login_api():
     data = request.json
@@ -46,10 +51,9 @@ def login_api():
         return {"error":"Wrong phone number or password"},400
     if not check_password_hash(user.password,income_password):
         return {"error": f"Паролі не співпадають {income_phone_number}"}, 400
-    
-    token_data = {"user_id": user.id}
-    access_token = jwt.encode(token_data, SECRET_KEY, algorithm='HS256')
-    
+
+    access_token = login_user(user)
+
     return {"access_token": access_token}, 200
 
 @user_urls.route("/api/v1/user-info",
