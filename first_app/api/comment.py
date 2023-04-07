@@ -48,12 +48,15 @@ def create_comment_api(post_id):
                     methods=["DELETE"])
 @login_required
 def delete_comment_post_api(comment_id):
-    data = request.json  
+
     author_id = g.user_id
+
+    error = CommentSchema().validate({"id":comment_id, "author_id":author_id})
+    if error:
+        return{"error":"Wrong comment id"}, 404
+
     comment = Comment.query.filter(Comment.id==comment_id,
                                    Comment.author_id==author_id).first()
-    if not comment:
-        return{"error":"Wrong comment_id or author_id"},400
     
     comment.deleted = 1
     db.session.add(comment)

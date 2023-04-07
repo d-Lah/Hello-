@@ -13,10 +13,16 @@
         <a href="/user-posts">User Posts</a><br>
     </div>
     
-    New text: <input type="text" name="newText" id="newText">
-    <input type="button" value="Update" id="updateComment">
+    New text: <input type="text" name="newText" id="newText"><br>
+    <input type="button" value="Update" id="updateComment"><br>
     
+    <input type="button" id="delete" name="delete" value="Delete"><br>
+    <p style="visibility: hidden;" id="confirmMessange">You wonna delete comment?</p>
+    <input type="button" style="visibility: hidden;" value="No" id="confirmNo" name="confirmNo">
+    <input type="button" style="visibility: hidden;" value="Yes" id="confirmYes" name="confirmYes"><br>
+
     <p style="visibility: hidden;" id="status">Update</p>
+    <p style="visibility: hidden;" id="deleted">Deleted</p>
     <p style="visibility: hidden;" id="notText">Not text</p>
     <p style="visibility: hidden;" id="wrongCommentId">Wrong comment id</p>
     <p style="visibility: hidden;" id="notToken">Request data isn't yours</p>
@@ -60,8 +66,45 @@
                 }
             }
 
-        })
+        });
         
+    });
+    
+    $("#delete").on("click", function(){
+        $("#confirmMessange").css("visibility", "visible")
+        $("#confirmNo").css("visibility", "visible")
+        $("#confirmYes").css("visibility", "visible")
+    });
+
+    $("#confirmYes").on("click", function(){
+        let urlPathName = window.location.pathname;
+        let splitUrlPathName = urlPathName.split("/");
+        let commentId = splitUrlPathName[3];
+        
+        let token = localStorage.getItem('token');
+        let prefix = "Bearer";  
+        
+        if(token){
+            $.ajax({
+                url: `/api/v1/delete-comment/delete/${commentId}`,
+                method: "DELETE",
+                headers: {"Authorization": `${prefix} ${token}`},
+                success: function(result){
+                    $("#deleted").css("visibility", "visible");
+                },
+                error: function(result, request, status, error){ 
+                    if(result.responseJSON){
+                        $("#wrongCommentId").css("visibility", "visible");
+                    }
+                }
+            });
+        }
+    });
+
+    $("#confirmNo").on("click", function(){
+        $("#confirmMessange").css("visibility", "hidden");
+        $("#confirmNo").css("visibility", "hidden");
+        $("#confirmYes").css("visibility", "hidden"); 
     })
 </script>
 </html>

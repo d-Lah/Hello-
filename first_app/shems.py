@@ -26,6 +26,12 @@ class CommentSchema(ma.Schema):
     created = fields.DateTime()
     text = fields.Str()
     deleted = fields.Bool()
+    
+    @validates("id")
+    def validate_id(self, id):
+        comment = Comment.query.filter(Comment.id==id).first()
+        if not comment:
+            raise ValidationError({"error":"Wrong comment id"})
 
     @validates("post_id")
     def validate_post_id(self, post_id):
@@ -38,11 +44,6 @@ class CommentSchema(ma.Schema):
         if not text:
             raise ValidationError({"error": "Not text"})
         
-    @validates("id")
-    def validate_id(self, id):
-        comment = Comment.query.filter(Comment.id==id).first()
-        if not comment:
-            raise ValidationError({"error":"Wrong comment id"})
 
 class FileUploadSchema(ma.Schema):
     class Meta:
@@ -82,11 +83,11 @@ class PostSchema(ma.Schema):
             raise ValidationError({"error": "Wrong post id"})
 
     @validates("title")
-    def validate_title(self, data, **kwargs):
-        if not data["title"]:
+    def validate_title(self, title):
+        if not title:
             raise ValidationError({"error":"not title"})
     
     @validates("body")
-    def validate_body(self, data, **kwargs):
-        if not data["body"]:
+    def validate_body(self, body):
+        if not body:
             raise ValidationError({"error":"not body"})
