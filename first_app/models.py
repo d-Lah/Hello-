@@ -36,6 +36,7 @@ class User(db.Model):
     def full_name(self):
         return f"{self.first_name} {self.second_name}"
 
+
 class FileUpload(db.Model):
     __tablename__ = 'file_upload'
     id = Column(Integer,primary_key=True)
