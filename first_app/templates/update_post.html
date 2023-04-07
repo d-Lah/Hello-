@@ -19,7 +19,13 @@
     
     <input type="button" id="update" name="update" value="Update"><br>
     
+    <input type="button" id="delete" name="delete" value="Delete"><br>
+    <p style="visibility: hidden;" id="confirmMessange">You wonna delete post?</p>
+    <input type="button" style="visibility: hidden;" value="No" id="confirmNo" name="confirmNo">
+    <input type="button" style="visibility: hidden;" value="Yes" id="confirmYes" name="confirmYes"><br>
+
     <p style="visibility: hidden;" id="status">Update</p>
+    <p style="visibility: hidden;" id="deleted">Deleted</p>
     <p style="visibility: hidden;" id="notTitleOrBody">Not title or body</p>
     <p style="visibility: hidden;" id="wrongFileExtension">Wrong file extension</p>
     <p style="visibility: hidden;" id="wrongPostId">Wrong post id</p>
@@ -81,6 +87,37 @@
                 }
             });
         
-    })    
+    });
+    $("#delete").on("click", function(){
+        $("#confirmMessange").css("visibility", "visible")
+        $("#confirmNo").css("visibility", "visible")
+        $("#confirmYes").css("visibility", "visible")
+    });
+    $("#confirmYes").on("click", function(){
+        let urlPathName = window.location.pathname;
+        let splitUrlPathName = urlPathName.split("/");
+        let postId = splitUrlPathName[3];
+        let token = localStorage.getItem('token');
+        let prefix = "Bearer";  
+        
+        if(token){
+            $.ajax({
+                url: `/api/v1/delete-post/delete/${postId}`,
+                method: "DELETE",
+                headers: {"Authorization": `${prefix} ${token}`},
+                success: function(result){
+                    $("#deleted").css("visibility", "visible");
+                },
+                error: function(result, request, status, error){ 
+                    $("#wrongPostId").css("visibility", "visible");
+                }
+            });
+        }
+    });
+    $("#confirmNo").on("click", function(){
+        $("#confirmMessange").css("visibility", "hidden")
+        $("#confirmNo").css("visibility", "hidden")
+        $("#confirmYes").css("visibility", "hidden") 
+    })
 </script>
 </html>

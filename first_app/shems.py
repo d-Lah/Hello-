@@ -37,11 +37,13 @@ class CommentSchema(ma.Schema):
     def validate_text(self, text):
         if not text:
             raise ValidationError({"error": "Not text"})
+        
     @validates("id")
     def validate_id(self, id):
         comment = Comment.query.filter(Comment.id==id).first()
         if not comment:
             raise ValidationError({"error":"Wrong comment id"})
+
 class FileUploadSchema(ma.Schema):
     class Meta:
         model = FileUpload
@@ -57,6 +59,7 @@ class FileUploadSchema(ma.Schema):
         exists = db.session.query(FileUpload.query.filter(FileUpload.id==id).exists()).scalar()
         if not exists:
             raise ValidationError({"error": "Wrong image id"})
+
 class PostSchema(ma.Schema):
     class Meta:
         model = Post
@@ -72,7 +75,18 @@ class PostSchema(ma.Schema):
     file = fields.Nested(FileUploadSchema)
     comments = fields.Nested(CommentSchema, many=True)
 
-    @validates_schema
-    def validate_title_or_body(self, data, **kwargs):
-        if not data["title"] or not data["body"]:
-            raise ValidationError({"error":"not title or body"})
+    @validates("id")
+    def validate_id(self, id):
+        post = Post.query.filter(Post.id==id).first()
+        if not post:
+            raise ValidationError({"error": "Wrong post id"})
+
+    @validates("title")
+    def validate_title(self, data, **kwargs):
+        if not data["title"]:
+            raise ValidationError({"error":"not title"})
+    
+    @validates("body")
+    def validate_body(self, data, **kwargs):
+        if not data["body"]:
+            raise ValidationError({"error":"not body"})

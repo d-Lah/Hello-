@@ -27,11 +27,7 @@
     let splitUrlPathName = urlPathName.split("/");
     let postId = splitUrlPathName[3];
 
-    if (!token) {
-            $("#notToken").css("visibility", "visible");
-            return;
-        }
-    
+    if (token) {
         $.ajax({
             url: `/api/v1/post-comments/post/${postId}`,
             method: "GET",
@@ -78,7 +74,7 @@
                             </p>`
                     )
                 });
-                    
+                
             },
             error: function(result,request, status, error){
                 if(result.responseJSON.error){
@@ -86,6 +82,6 @@
                 }
             }
         });
-    
+    }   
 </script>
 </html>

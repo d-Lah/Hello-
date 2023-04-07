@@ -10,7 +10,7 @@
         <a href="/registrate" style="visibility: visible;" id="registerPageLink"> Register page </a><br>
         <a href="/login" style="visibility: visible;" id="loginPageLink"> Login Page </a><br>
         <a href="/create-post" style="visibility: hidden;" id="createPost"> Create post </a><br>
-        <a href="/user-posts" style="visibility: hidden;" id="userPosts"> User Post </a><br>
+        <a href="/user-posts" style="visibility: hidden;" id="userPosts"> User Posts </a><br>
         <a href="/user-info/edit" style="visibility: hidden;" id="editUserInfo"> Edit user info </a><br>
         <a href="/user-info/change-password" style="visibility: hidden;" id="changePassword"> Change password </a><br>
         <hr>
@@ -30,11 +30,7 @@
     let token = localStorage.getItem('token');
     let prefix = "Bearer";
     
-    if (!token) {
-            $("#notToken").css("visibility", "visible");
-            return;
-        }
-        
+    if (token) {
         $( "#loginPageLink").css( "visibility", "hidden" );
         $( "#registerPageLink").css( "visibility", "hidden" );
         $("#createPost").css("visibility","visible");
@@ -58,5 +54,6 @@
         localStorage.clear();
         location.reload();
     });
+}
 </script>
 </html>

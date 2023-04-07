@@ -62,13 +62,13 @@ def user_post_api():
                  methods=["DELETE"])
 @login_required
 def delete_post_api(post_id):
-    data = request.json
-
+  
     author_id = g.user_id
-    post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
-    if not post:
-        return{"error":"Wrong post id"},400
+    error = PostSchema().validate({"id": post_id})
+    if error:
+        return{"error":"Wrong post id"},404
     
+    post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
     post.deleted = 1
     db.session.add(post)
     db.session.commit()
