@@ -73,6 +73,7 @@ class PostSchema(ma.Schema):
     body = fields.Str()
     title = fields.Str()
     deleted = fields.Bool()
+    file_id = fields.Int()
     file = fields.Nested(FileUploadSchema)
     comments = fields.Nested(CommentSchema, many=True)
 
@@ -91,3 +92,8 @@ class PostSchema(ma.Schema):
     def validate_body(self, body):
         if not body:
             raise ValidationError({"error":"not body"})
+    @validates("file_id")
+    def validate_file_id(self, file_id):
+        file = FileUpload.query.filter(FileUpload.id==file_id).first()
+        if not file:
+            raise ValidationError({"error":"Wrong file id"})

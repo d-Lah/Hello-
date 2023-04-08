@@ -28,17 +28,25 @@ def create_post_api():
     body = data.get("body")
     file_id = data.get("file_id")
 
-    error = PostSchema().validate({"title":data["title"], "body": data["body"]})
+    error = PostSchema().validate({
+        "title":title,
+        "body":body,})
     if error:
         return {"error": error}, 400
 
+    error_file_id = PostSchema().validate({
+        "file_id":file_id})
 
-    new_post = Post(author_id = author_id,
-                    user_name=author_name,
-                    title=title,
-                    body=body,
-                    file_id=file_id,
-                    created= current_datetime)
+    if error_file_id:
+        return{"error": "Wrong file id"}, 403
+
+    new_post = Post(
+        author_id = author_id,
+        user_name = author_name,
+        title = title,
+        body = body,
+        file_id = file_id,
+        created = current_datetime)
     
     db.session.add(new_post)
     db.session.commit()

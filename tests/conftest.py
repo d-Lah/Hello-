@@ -2,7 +2,10 @@
 import pytest
 import random
 from first_app.db import db
-from first_app.models import User
+from first_app.models import (User,
+                              Post,
+                              Comment,
+                              FileUpload)
 from first_app.app import create_app
 from first_app.api.user import login_user
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -55,3 +58,22 @@ def user_headers(new_user):
     return {
         "Authorization": f"Bearer {_access_token}"
     }
+
+@pytest.fixture()
+def create_file(app):
+    file_url = "test.jpg"
+    file = FileUpload(url = file_url)
+    db.session.add(file)
+    db.session.commit()
+    db.session.flush()
+    return file.id
+
+@pytest.fixture()
+def send_data_for_create_post_api(app, create_file):
+    title = "test"
+    body = "test"
+    file_id = create_file
+    
+    return {"title":title,
+            "body":body,
+            "file_id":file_id}

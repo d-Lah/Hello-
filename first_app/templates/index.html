@@ -3,27 +3,62 @@
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <title>Page Title</title>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+<style>
+    body, head{
+        height: 100%;
+        font-family: "Inconsolata", sans-serif;
+        background-color: rgb(150, 150, 150);
+    }
+    .menu{
+        display: none;
+    }
+</style>
 </head>
 <body>
 
-    <div>
-        <a href="/registrate" style="visibility: visible;" id="registerPageLink"> Register page </a><br>
-        <a href="/login" style="visibility: visible;" id="loginPageLink"> Login Page </a><br>
-        <a href="/create-post" style="visibility: hidden;" id="createPost"> Create post </a><br>
-        <a href="/user-posts" style="visibility: hidden;" id="userPosts"> User Posts </a><br>
-        <a href="/user-info/edit" style="visibility: hidden;" id="editUserInfo"> Edit user info </a><br>
-        <a href="/user-info/change-password" style="visibility: hidden;" id="changePassword"> Change password </a><br>
-        <hr>
-    </div>
-    
-    <header> 
-        <h3><p id="userFullName"></p></h3>
-        
-        <input style="visibility: hidden;" type="button" id="logOut" name="logOut" value="Log out">
-    </header> 
-    
-    <p id="errorUserToken" style="visibility: hidden; color: crimson;">User doesn't login</p>
+    <div class="w3-top">
+        <div class="w3-row w3-padding w3-black">
+            
+            <div class="w3-col s3 w3-right">
+                <a href="/login" style="visibility: visible;" id="loginPageLink" class="w3-button w3-block w3-black"> Login Page </a>
+            </div>
+            
+            <div class="w3-col s3 w3-right">
+                <a href="/registrate" style="visibility: visible;" id="registerPageLink" class="w3-button w3-block w3-black"> Register page </a>
+            </div>
 
+            <div class="w3-row w3-left">
+                <p id="userFullName" class="w3-block w3-black"></p>
+            </div>
+            <div class="w3-row w3-left" style="padding-top: 7px; padding-left: 48px;">
+                <input style="visibility: hidden;" type="button" id="logOut" name="logOut" value="Log out" class="w3-button w3-block w3-black">
+            </div>
+        </div>
+    </div><br>
+    <header class="w3-row w3-bottomleft w3-padding-24">
+        <div class="w3-row w3-padding w3-black"></div>
+            <div class=" w3-col s3">
+                <a href="/user-info/edit" style="visibility: hidden;" id="editUserInfo" class="w3-button w3-block w3-black"> Edit user info </a>
+            </div>
+            
+            <div class=" w3-col s3">
+                <a href="/user-info/change-password" style="visibility: hidden;" id="changePassword" class="w3-button w3-block w3-black"> Change password </a>        
+            </div>
+
+            <div class=" w3-col s3">
+            <a href="/create-post" style="visibility: hidden;" id="createPost" class="w3-button w3-block w3-black"> Create post </a>
+            </div>
+                
+            <div class=" w3-col s3">
+                <a href="/user-posts" style="visibility: hidden;" id="userPosts" class="w3-button w3-block w3-black"> User Posts </a>
+            </div>
+        </div>
+    </header>
+        <div class="w3-bottomleft w3-padding-8">
+            <p id="errorUserToken" style="visibility: hidden; color: crimson;">User doesn't login</p>    
+        </div>
 </body>
 
 <script type="text/javascript">

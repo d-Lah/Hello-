@@ -5,21 +5,65 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
     <title>Create post</title>
+    <style>
+        body, head{
+        height: 100%;
+        font-family: "Inconsolata", sans-serif;
+        background-color: rgb(175, 175, 175);
+        }
+        .menu{
+        display: none;
+        }
+        
+        #post{
+            padding: 5px 20px 5px;
+            color: aliceblue;
+            background-color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 2px;
+        }
+        #post:hover{
+            color: black;
+            background-color: white;
+        }
+        a:visited, a:link{
+            text-decoration: none;
+            padding: 5px 20px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            background-color: rgb(0, 0, 0) ;}
+
+        a:active, a:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;}
+    </style>
 </head>
 
 <body>
-    <a href="/">Main page</a><br>
-    <hr>
+    <div class="w3-top">
+        <div class="w3-row" style="background-color: rgb(175, 175, 175);">
+            <div class="w3-col s3">
+                <a href="/" style="border-radius: 2px;">Main page</a><br>
+            </div>
+        </div>
+    </div><br>
+    
+    <div style="color: aliceblue; padding-top:35px; padding-left: 2px;">
+        <input type="text" id="title" name="title" placeholder="Title" class="w3-border" style="border-radius: 4px;"><br>
+        <input type="text" id="body" name="body" placeholder="Body" class="w3-border" style="border-radius: 4px;"><br>
+        <input type="file" id="file" multiple>
+    </div><br>
 
-    Title: <input type="text" id="title" name="title"><br>
-    Body: <input type="text" id="body" name="body"><br>
-    File: <input type="file" id="file" multiple><br>
     <input type="button" id="post" name="post" value="Post">
     
-    <p style="visibility: hidden;" id="status">Published</p>
-    <p style="visibility: hidden;" id="notTitleBody">Not title or body</p>
-    <p style="visibility: hidden;" id="wrongFileExtension">Wrong file extension</p>
+    <p style="visibility: hidden; color: greenyellow; font-size: 17px;" id="status">Published</p>
+    <p style="visibility: hidden; color: red; font-size: 17px;" id="notTitleOrBody">Not title or body</p>
+    <p style="visibility: hidden; color:red; font-size: 17px;" id="wrongFileExtension">Wrong file extension</p>
 
 </body>
 
@@ -33,10 +77,11 @@
         let body = $("#body").val();
         let file = document.getElementById("file").files[0];
         
+        console.log("")
         let formData = new FormData();
         formData.append("file", file);
         
-        if(title === "" || body === ""){
+        if(title == "" || body == ""){
             return $("#notTitleOrBody").css("visibility", "visible");
             return;
         }
