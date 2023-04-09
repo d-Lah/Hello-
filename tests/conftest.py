@@ -54,8 +54,8 @@ def new_user(app):
     return new_user
 
 @pytest.fixture()
-def create_post(app,send_data_for_create_post_api, new_user):
-    data = send_data_for_create_post_api
+def create_post(app,send_data_for_post_api, new_user):
+    data = send_data_for_post_api
     
     author_id = new_user.id
     author_name = new_user.first_name
@@ -74,7 +74,32 @@ def create_post(app,send_data_for_create_post_api, new_user):
     db.session.add(post)
     db.session.commit()
     db.session.flush()
-    return post.id
+    return post
+
+@pytest.fixture()
+def create_comment(
+    new_user,
+    create_post,
+    send_data_for_comment_api):
+
+    data = send_data_for_comment_api
+    author_id = new_user.id
+    _post = create_post
+    author_name = new_user.first_name
+    text = data["text"]
+    current_datetime = datetime.datetime.today()
+
+    comment = Comment(
+        author_id=author_id,
+        post_id=_post.id,
+        user_name=author_name,
+        created=current_datetime,
+        text=text)
+    
+    db.session.add(comment)
+    db.session.commit()
+    db.session.flush()
+    return comment
 
 @pytest.fixture()
 def user_headers(new_user):
@@ -93,7 +118,7 @@ def create_file(app):
     return file.id
 
 @pytest.fixture()
-def send_data_for_create_post_api(app, create_file):
+def send_data_for_post_api(app, create_file):
     title = "test"
     body = "test"
     file_id = create_file
@@ -102,8 +127,7 @@ def send_data_for_create_post_api(app, create_file):
             "body":body,
             "file_id":file_id}
 
-
 @pytest.fixture()
-def send_data_for_create_comment_api(app):
+def send_data_for_comment_api(app):
     text = "test"
     return {"text": text}

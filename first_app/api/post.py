@@ -23,7 +23,7 @@ def create_post_api():
     author_id = g.user_id
     author_name = user.first_name
     data = request.json
-    current_datetime = datetime.datetime.today() 
+    current_datetime = datetime.datetime.today()
     title = data.get("title")
     body = data.get("body")
     file_id = data.get("file_id")
@@ -116,7 +116,7 @@ def post_comments_api(post_id):
     post = Post.query.filter(Post.deleted== False,
                              Post.id == post_id).first()
     if not post:
-        return{"wrong_post_id":"Wrong post id"},400
+        return{"error":"Wrong post id"},404
         
     post_comments = PostSchema().dump(post)
     return {"post":post_comments}, 200

@@ -5,27 +5,133 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
     <title>Update comment</title>
+    <style>
+        body, head{
+            font-family: "Inconsolata", sans-serif;
+            background-color: rgb(175, 175, 175);
+        }
+        .comment{
+            margin-left: 25px;
+        }
+        a:visited, a:link{
+            text-decoration: none;
+            padding: 5px 20px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 3px;
+            margin-left: 5px;
+        }
+
+        a:active, a:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+        .updateCommentButton{
+            text-decoration: none;
+            padding: 3px 13px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 9px;
+            margin-left: 25px;
+            border: none;
+        }
+        .updateCommentButton:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+        #newText{
+            padding: 7px 15px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-left: 25px;
+        }
+        .error{
+            color: red;
+            font-size: 17px;
+            font-weight: 600;
+            margin-left: 25px;
+        }
+        .navigateButton{
+            margin-left: 21px;
+        }
+        #confirmMessange{
+            font-size: 17px;
+            margin-left: 25px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+        .confirmButtons{
+            margin-left: 25px;
+        }
+        #confirmNo{
+            text-decoration: none;
+            padding: 3px 13px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 9px;
+            border: none;
+        }
+        #confirmYes{
+            text-decoration: none;
+            padding: 3px 13px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 9px;
+            margin-left: 25px;
+            border: none;
+        }
+        #confirmNo:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+        #confirmYes:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+    </style>
 </head>
 <body>
-    <div>
-        <a href="/"> Main page </a><br>
+    <div class="navigateButton">
+        <a href="/"> Main page </a>
         <a href="/user-posts">User Posts</a><br>
     </div>
-    
-    New text: <input type="text" name="newText" id="newText"><br>
-    <input type="button" value="Update" id="updateComment"><br>
-    
-    <input type="button" id="delete" name="delete" value="Delete"><br>
-    <p style="visibility: hidden;" id="confirmMessange">You wonna delete comment?</p>
-    <input type="button" style="visibility: hidden;" value="No" id="confirmNo" name="confirmNo">
-    <input type="button" style="visibility: hidden;" value="Yes" id="confirmYes" name="confirmYes"><br>
 
-    <p style="visibility: hidden;" id="status">Update</p>
-    <p style="visibility: hidden;" id="deleted">Deleted</p>
-    <p style="visibility: hidden;" id="notText">Not text</p>
-    <p style="visibility: hidden;" id="wrongCommentId">Wrong comment id</p>
-    <p style="visibility: hidden;" id="notToken">Request data isn't yours</p>
+    <input type="text" name="newText" id="newText" placeholder="NewText"><br>
+    
+    <input class="updateCommentButton" type="button" value="Update" id="updateComment"><br>
+    <input class="updateCommentButton" type="button" id="delete" name="delete" value="Delete"><br>
+    
+    <p style="visibility: hidden;" id="confirmMessange">You wonna delete comment?</p>
+    
+    <div class="confirmButtons">
+        <input type="button" style="visibility: hidden;" value="No" id="confirmNo" name="confirmNo">
+        <input type="button" style="visibility: hidden;" value="Yes" id="confirmYes" name="confirmYes"><br>
+    </div>
+
+    <p style="visibility: hidden; font-size: 17px; font-weight: 600; color: greenyellow; margin-left: 25px;" id="status">Update</p>
+    <p style="visibility: hidden; font-size: 17px; font-weight: 600; color: greenyellow; margin-left: 25px;" id="deleted">Deleted</p>
+    <p style="visibility: hidden;" class="error" id="notText">Not text</p>
+    <p style="visibility: hidden;" class="error" id="wrongCommentId">Wrong comment id</p>
+    <p style="visibility: hidden;" class="error" id="notToken">Request data isn't yours</p>
 </body>
 <script>
     $("#updateComment").on("click", function(){

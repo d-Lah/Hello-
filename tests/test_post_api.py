@@ -17,11 +17,11 @@ def test_should_check_post_api(client, user_headers):
 def test_should_check_create_post_api(
         client,
         user_headers,
-        send_data_for_create_post_api):
+        send_data_for_post_api):
     
     response = client.post(
         "/api/v1/create-post",
         headers=user_headers,
-        json = send_data_for_create_post_api
+        json = send_data_for_post_api
     )
     assert response.status_code == 200

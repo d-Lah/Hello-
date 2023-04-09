@@ -5,19 +5,64 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
     <title>Document</title>
+    <style>
+        body, head{
+            font-family: "Inconsolata", sans-serif;
+            background-color: rgb(175, 175, 175);
+        }
+        a:visited, a:link{
+            text-decoration: none;
+            padding: 5px 20px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 3px;
+        }
+
+        a:active, a:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+        #post{
+            margin-left: 500px;
+        }
+        p.text{
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+        hr{
+            width: 50%;
+            border-top: 2px solid black;
+        }
+        #comments{
+            margin-left: 500px;
+        }
+
+        .navigateButton{
+            margin-left: 500px;
+        }
+    </style>
 </head>
 <body>
-    <a href="/">Main page</a><br>
-    <a href="/user-posts">User posts</a><br>
+    
+    <div class="navigateButton">
+        <a href="/">Main page</a>
+        <a href="/user-posts">User posts</a><br>
+    </div>
+
     <div id="post">
 
     </div>
     <div id="comments">
-        <hr>
-        Comments:
     </div>
-    <p style="visibility: hidden;" id="wrongPostId">Wrong post id</p>
+    <p style="visibility: hidden; color: red; font-size: 17px; font-weight: 600; margin-left: 251px;" id="wrongPostId">Wrong post id</p>
 </body>
 <script>
     
@@ -47,14 +92,14 @@
                     }    
                 $("#post").append(
                         `<hr>
-                        <p> User name:${userName}<br>
+                        <p class="text"> User name:${userName}<br>
                         Title :${title}<br>
                         Body :${body}<br>
-                        created:${created}</p>`
-                        );
+                        created:${created}</p>
+                        `);
                         if (image){        
                             $("#post").append(
-                            `<img src="/static/uploads/${image}" widht="250" height="250"><br>`
+                            `<img src="/static/uploads/${image}" widht="310" height="310" style="border-radius: 10px;"><br>`
                         )}
                     
                 $.each(post["comments"], function(index){
@@ -65,14 +110,15 @@
                     let created = comments[index]["created"];
                     let commentId = comments[index]["id"]
                     $("#comments").append(
-                        `<p>
-                            Author full name:${userName}<br>
-                            Text :${text}<br>
-                            created:${created}<br>
-                            <a href="/update-comment/update/${commentId}">Update comment</a>
-                            <hr>
-                            </p>`
-                    )
+                        `<hr>
+                        <p class="text">
+                        Comments: <br>
+                        Author full name:${userName}<br>
+                        Text :${text}<br>
+                        created:${created}<br>
+                        </p>
+                        <a href="/update-comment/update/${commentId}">Update comment</a>`
+                        )
                 });
                 
             },
