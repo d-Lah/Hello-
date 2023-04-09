@@ -5,20 +5,77 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
     <title>Document</title>
+    <style>
+        body, head{
+            font-family: "Inconsolata", sans-serif;
+            background-color: rgb(175, 175, 175);
+        }
+        .comment{
+            margin-left: 25px;
+        }
+        a:visited, a:link{
+            text-decoration: none;
+            padding: 5px 20px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 3px;
+            margin-left: 2px;
+        }
+
+        a:active, a:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+        #createCommentButton{
+            text-decoration: none;
+            padding: 3px 13px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 7px;
+            margin-left: 2px;
+            border: none;
+        }
+        #createCommentButton:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+        #text{
+            padding: 7px 15px;
+        }
+        .error{
+            color: red;
+            font-size: 17px;
+            font-weight: 600;
+            margin-left: 25px;
+        }
+    </style>
 </head>
 <body>
     <div>
-        <a href="/"> Main page </a><br>
+        <a href="/"> Main page </a>
         <a href="/user-posts">User Posts</a><br>
+    </div><br>
+
+    <div class="comment">
+        <input type="text" id="text" name="text" placeholder="Text" class="w3-border" style="border-radius: 4px;"><br>
+        <input type="button" id="createCommentButton" name="createCommentButton" value="Create comment"><br>
     </div>
 
-    <hr>
-    Text: <input type="text" id="text" name="text"><br>
-    <input type="button" id="createCommentButton" name="createCommentButton" value="Create comment"><br>
-    
-    <p style="visibility: hidden;" id="notText">Not text</p>
-    <p style="visibility: hidden;" id="wrongPostId">Wrong post id</p>
+    <div class="error">
+        <p style="visibility: hidden;" id="notText">Not text</p>
+        <p style="visibility: hidden;" id="wrongPostId">Wrong post id</p>
+    </div>
 </body>
 <script>    
         $("#createCommentButton").on("click", function(){
@@ -53,8 +110,8 @@
                             top.location.href = `/post-comments/post/${postId}`
                         },
                         error: function(result, request, status, error){
-
-                            if(result.responseJSON.wrong_post_id){
+                            console.log(result)
+                            if(result.responseJSON.error){
                                 $("#wrongPostId").css("visibility", "visible");
                             }
                         }

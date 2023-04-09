@@ -1,6 +1,7 @@
 
 import pytest
 import random
+import datetime
 from first_app.db import db
 from first_app.models import (User,
                               Post,
@@ -36,7 +37,7 @@ def runner(app):
 
 @pytest.fixture()
 def new_user(app):
-    last_digits = str(random.random())[-3:]
+    last_digits = str(random.random())[-9:]
     phone_number = f"0685087{last_digits}"
     first_name = f"Andy{last_digits}"
     second_name = f"Kovv{last_digits}"
@@ -51,6 +52,29 @@ def new_user(app):
     db.session.commit()
     db.session.flush()
     return new_user
+
+@pytest.fixture()
+def create_post(app,send_data_for_create_post_api, new_user):
+    data = send_data_for_create_post_api
+    
+    author_id = new_user.id
+    author_name = new_user.first_name
+    title = data["title"]
+    body = data["body"]
+    file_id = data["file_id"]
+    current_datetime = datetime.datetime.today()
+    post = Post(
+        author_id = author_id,
+        user_name = author_name,
+        title = title,
+        body = body,
+        file_id = file_id,
+        created = current_datetime 
+    )
+    db.session.add(post)
+    db.session.commit()
+    db.session.flush()
+    return post.id
 
 @pytest.fixture()
 def user_headers(new_user):
@@ -77,3 +101,9 @@ def send_data_for_create_post_api(app, create_file):
     return {"title":title,
             "body":body,
             "file_id":file_id}
+
+
+@pytest.fixture()
+def send_data_for_create_comment_api(app):
+    text = "test"
+    return {"text": text}

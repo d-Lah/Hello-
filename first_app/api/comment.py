@@ -22,7 +22,7 @@ def create_comment_api(post_id):
     comments_post_id = post_id
     text = data.get("text")
     created = datetime.datetime.now()
-    
+        
     error = CommentSchema().validate({"text": text, "post_id": comments_post_id})
     
     error_post_id = error.get("post_id")

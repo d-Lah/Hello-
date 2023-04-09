@@ -10,12 +10,8 @@
     <title>Create post</title>
     <style>
         body, head{
-        height: 100%;
-        font-family: "Inconsolata", sans-serif;
-        background-color: rgb(175, 175, 175);
-        }
-        .menu{
-        display: none;
+            font-family: "Inconsolata", sans-serif;
+            background-color: rgb(175, 175, 175);
         }
         
         #post{
@@ -23,11 +19,17 @@
             color: aliceblue;
             background-color: rgb(0, 0, 0);
             border: none;
-            border-radius: 2px;
+            border-radius: 5px;
+            margin-left: 25px;
         }
         #post:hover{
             color: black;
             background-color: white;
+        }
+        .post{
+            margin-left: 25px;
+            border: none;
+            margin-top: 6px;
         }
         a:visited, a:link{
             text-decoration: none;
@@ -35,35 +37,35 @@
             text-align: center;
             display: inline-block;
             color: aliceblue;
-            background-color: rgb(0, 0, 0) ;}
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 3px;
+            margin-left: 2px;
+        }
 
         a:active, a:hover{
             text-decoration: none;
             color: black;
-            background-color: white;}
+            background-color: white;
+        }
     </style>
 </head>
 
 <body>
-    <div class="w3-top">
-        <div class="w3-row" style="background-color: rgb(175, 175, 175);">
-            <div class="w3-col s3">
-                <a href="/" style="border-radius: 2px;">Main page</a><br>
-            </div>
-        </div>
-    </div><br>
     
-    <div style="color: aliceblue; padding-top:35px; padding-left: 2px;">
-        <input type="text" id="title" name="title" placeholder="Title" class="w3-border" style="border-radius: 4px;"><br>
-        <input type="text" id="body" name="body" placeholder="Body" class="w3-border" style="border-radius: 4px;"><br>
-        <input type="file" id="file" multiple>
+    <a href="/">Main page</a><br>
+    
+    <div style="color: aliceblue; margin-top:10px;">
+        <input type="text" id="title" name="title" placeholder="Title" class="post" style="border-radius: 4px;"><br>
+        <input type="text" id="body" name="body" placeholder="Body" class="post" style="border-radius: 4px;"><br>
+        <input type="file" id="file" class="post" multiple>
     </div><br>
 
     <input type="button" id="post" name="post" value="Post">
     
-    <p style="visibility: hidden; color: greenyellow; font-size: 17px;" id="status">Published</p>
-    <p style="visibility: hidden; color: red; font-size: 17px;" id="notTitleOrBody">Not title or body</p>
-    <p style="visibility: hidden; color:red; font-size: 17px;" id="wrongFileExtension">Wrong file extension</p>
+    <p style="visibility: hidden; color: greenyellow; font-size: 17px; font-weight: 600; margin-left: 25px;" id="status">Published</p>
+    <p style="visibility: hidden; color: red; font-size: 17px; font-weight: 600; margin-left: 25px;" id="notTitleOrBody">Not title or body</p>
+    <p style="visibility: hidden; color:red; font-size: 17px; font-weight: 600; margin-left: 25px;" id="wrongFileExtension">Wrong file extension</p>
 
 </body>
 

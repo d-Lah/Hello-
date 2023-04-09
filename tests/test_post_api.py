@@ -1,8 +1,3 @@
-
-
-# pytest
-# pip install pytest
-
 def test_should_check_authentication_error_for_post_api_if_client_not_authorized(client):
     response = client.get("/api/v1/user-posts")
     assert response.status_code == 403
