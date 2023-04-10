@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
     <title>Create post</title>
     <style>
+        
         body, head{
             font-family: "Inconsolata", sans-serif;
             background-color: rgb(175, 175, 175);
@@ -79,9 +80,7 @@
         let body = $("#body").val();
         let file = document.getElementById("file").files[0];
         
-        console.log("")
         let formData = new FormData();
-        formData.append("file", file);
         
         if(title == "" || body == ""){
             return $("#notTitleOrBody").css("visibility", "visible");
@@ -91,35 +90,54 @@
         if (!token) {
             $("#notToken").css("visibility", "visible");
             return;
-        }        
-                $.ajax({
-                    url: "/api/v1/upload-file",
+        }
+        if(!file){
+            $.ajax({      
+                url: "/api/v1/create-post",
+                method: "POST",
+                dataType: "json",
+                headers: {"Authorization": `${prefix} ${token}`},
+                contentType: "application/json;  charset=utf-8",
+                data: JSON.stringify({
+                    title: title,
+                    body: body,
+                    file_id: null
+                }),
+                success: function(result){
+                    return $("#status").css("visibility", "visible");        
+                }
+            });
+            return
+        }
+        formData.append("file", file);
+        $.ajax({
+            url: "/api/v1/upload-file",
+            method: "POST",
+            processData: false,
+            contentType:false,
+            data: formData,
+            success: function(result){
+                file_id = result.id
+                $.ajax({      
+                    url: "/api/v1/create-post",
                     method: "POST",
-                    processData: false,
-                    contentType:false,
-                    data: formData,
+                    dataType: "json",
+                    headers: {"Authorization": `${prefix} ${token}`},
+                    contentType: "application/json;  charset=utf-8",
+                    data: JSON.stringify({
+                        title: title,
+                        body: body,
+                        file_id: file_id
+                    }),
                     success: function(result){
-                        file_id = result.id
-                        $.ajax({      
-                            url: "/api/v1/create-post",
-                            method: "POST",
-                            dataType: "json",
-                            headers: {"Authorization": `${prefix} ${token}`},
-                            contentType: "application/json;  charset=utf-8",
-                            data: JSON.stringify({
-                                title: title,
-                                body: body,
-                                file_id: file_id
-                            }),
-                            success: function(result){
-                                return $("#status").css("visibility", "visible");        
-                            }
-                        });  
-                    },
-                    error: function(request,status,error){
-                        return $("#wrongFileExtension").css("visibility", "visible");
+                        return $("#status").css("visibility", "visible");        
                     }
-                });
+                }); 
+            },
+            error: function(request,status,error){
+                return $("#wrongFileExtension").css("visibility", "visible");
+            }
+        });
             
                 
         });

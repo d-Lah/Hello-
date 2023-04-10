@@ -5,30 +5,141 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
     <title>Update post</title>
+    <style>
+        body, head{
+            font-family: "Inconsolata", sans-serif;
+            background-color: rgb(175, 175, 175);
+        }
+        .newData{
+            margin-top: 10px;
+            margin-left: 25px;
+        }
+        a:visited, a:link{
+            text-decoration: none;
+            padding: 5px 20px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 3px;
+            margin-left: 5px;
+        }
+
+        a:active, a:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+        .updatePostButton{
+            text-decoration: none;
+            padding: 3px 13px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 9px;
+            margin-left: 25px;
+            border: none;
+        }
+        .updatePostButton:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+        #title{
+            padding: 7px 15px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        #body{
+            padding: 7px 15px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .error{
+            color: red;
+            font-size: 17px;
+            font-weight: 600;
+            margin-left: 25px;
+        }
+        .navigateButton{
+            margin-left: 21px;
+        }
+        #confirmMessange{
+            font-size: 17px;
+            margin-left: 25px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+        .confirmButtons{
+            margin-left: 25px;
+        }
+        #confirmNo{
+            text-decoration: none;
+            padding: 3px 13px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 9px;
+            border: none;
+        }
+        #confirmYes{
+            text-decoration: none;
+            padding: 3px 13px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 9px;
+            margin-left: 25px;
+            border: none;
+        }
+        #confirmNo:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+        #confirmYes:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+    </style>
 </head>
 <body>
-
-    <a href="/">Main page</a><br>
-    <a href="/user-posts">User posts</a><br>
-    <hr>
-
-    New Title: <input type="text" id="title" name="title"><br>
-    New Body: <input type="text" id="body" name="body"><br>
-    New File: <input type="file" id="file" multiple><br>
+    <div class="navigateButton">
+        <a href="/">Main page</a>
+        <a href="/user-posts">User posts</a><br>
+    </div>
+    <div class="newData">
+        <input type="text" id="title" name="title" placeholder="New Title"><br>
+        <input type="text" id="body" name="body" placeholder="New Body"><br>
+        <input type="file" id="file" multiple><br>
+    </div>
     
-    <input type="button" id="update" name="update" value="Update"><br>
+    <input type="button" class="updatePostButton" id="update" name="update" value="Update"><br>
     
-    <input type="button" id="delete" name="delete" value="Delete"><br>
+    <input type="button" class="updatePostButton" id="delete" name="delete" value="Delete"><br>
+    
     <p style="visibility: hidden;" id="confirmMessange">You wonna delete post?</p>
-    <input type="button" style="visibility: hidden;" value="No" id="confirmNo" name="confirmNo">
-    <input type="button" style="visibility: hidden;" value="Yes" id="confirmYes" name="confirmYes"><br>
+    <div class="confirmButtons">
+        <input type="button" style="visibility: hidden;" value="No" id="confirmNo" name="confirmNo">
+        <input type="button" style="visibility: hidden;" value="Yes" id="confirmYes" name="confirmYes"><br>
+    </div>
 
-    <p style="visibility: hidden;" id="status">Update</p>
-    <p style="visibility: hidden;" id="deleted">Deleted</p>
-    <p style="visibility: hidden;" id="notTitleOrBody">Not title or body</p>
-    <p style="visibility: hidden;" id="wrongFileExtension">Wrong file extension</p>
-    <p style="visibility: hidden;" id="wrongPostId">Wrong post id</p>
+    <p style="visibility: hidden;  font-size: 17px; font-weight: 600; color: greenyellow; margin-left: 25px;" id="status">Update</p>
+    <p style="visibility: hidden;  font-size: 17px; font-weight: 600; color: greenyellow; margin-left: 25px;" id="deleted">Deleted</p>
+
+    <p style="visibility: hidden;" class="error" id="wrongFileExtension">Wrong file extension</p>
+    <p style="visibility: hidden;" class="error" id="wrongPostId">Wrong post id</p>
 </body>
 <script>
     $("#update").on("click", function(){
@@ -48,11 +159,6 @@
         let formData = new FormData();
         formData.append("file", file);
         
-        if(newTitle === "" || newBody === ""){
-            return $("#notTitleOrBody").css("visibility", "visible");
-            return;
-        }
-
         if (!token) {
             $("#notToken").css("visibility", "visible");
             return;
@@ -73,9 +179,9 @@
                         headers: {"Authorization": `${prefix} ${token}`},
                         contentType: "application/json;  charset=utf-8",
                         data: JSON.stringify({
-                            update_title: newTitle,
-                            update_body: newBody,
-                            update_file_id: file_id
+                            title: newTitle,
+                            body: newBody,
+                            file_id: file_id
                         }),
                         success: function(result){
                             return $("#status").css("visibility", "visible");        

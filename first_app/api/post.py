@@ -30,15 +30,10 @@ def create_post_api():
 
     error = PostSchema().validate({
         "title":title,
-        "body":body,})
+        "body":body})
+
     if error:
         return {"error": error}, 400
-
-    error_file_id = PostSchema().validate({
-        "file_id":file_id})
-
-    if error_file_id:
-        return{"error": "Wrong file id"}, 403
 
     new_post = Post(
         author_id = author_id,
@@ -88,9 +83,9 @@ def delete_post_api(post_id):
 @login_required
 def update_post_api(post_id):
     data = request.json
-    update_title = data.get("update_title")
-    update_body = data.get("update_body")
-    update_file_id = data.get("update_file_id")
+    update_title = data.get("title")
+    update_body = data.get("body")
+    update_file_id = data.get("file_id")
     update_datatime = datetime.datetime.now()
     author_id = g.user_id
 
@@ -99,8 +94,12 @@ def update_post_api(post_id):
     if not post:
         return{"error":"Wrong post id"},404
     
-    post.title = update_title
-    post.body = update_body
+    if update_title:
+        post.title = update_title
+
+    if update_body:
+        post.body = update_body
+
     post.datatime = update_datatime
     post.file_id = update_file_id
     db.session.add(post)
