@@ -5,25 +5,95 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
     <title>Document</title>
+    <style>
+        body, head{
+            font-family: "Inconsolata", sans-serif;
+            background-color: rgb(175, 175, 175);
+        }
+        .newData{
+            margin-top: 10px;
+            margin-left: 25px;
+        }
+        a:visited, a:link{
+            text-decoration: none;
+            padding: 5px 20px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 3px;
+            margin-left: 5px;
+        }
+
+        a:active, a:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+        #updateButton{
+            text-decoration: none;
+            padding: 3px 13px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 9px;
+            margin-left: 25px;
+            border: none;
+        }
+        #updateButton:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+        #firstName{
+            padding: 7px 15px;
+            margin-top: 6px;
+            margin-bottom: 10px;
+        }
+        #secondName{
+            padding: 7px 15px;
+            margin-top: 6px;
+            margin-bottom: 10px;
+        }
+        #phoneNumber{
+            padding: 7px 15px;
+            margin-top: 6px;
+            margin-bottom: 10px;
+        }
+        .error{
+            color: red;
+            font-size: 17px;
+            font-weight: 600;
+            margin-left: 25px;
+        }
+        .navigateButton{
+            margin-left: 21px;
+        }
+    </style>
 </head>
 <body>
-    <div>
+    <div class="navigateButton">
         <a href="/"> Main page </a>
-        <hr>
     </div>
-    
-    PhoneNumber: <input type="text" id="phoneNumber" name="phoneNumber"><br>
-    FirstName: <input type="text" id="firstName" name="firstName"><br>
-    SecondName: <input type="text" id="secondName" name="secondName"><br>
-    
-    <input type="button" id="registrateButton" name="registrateButton" value="Edit">
 
-    <p style="visibility: hidden;" id="errorRequiredFields">Required fields is empty</p>
-    <p style="visibility: hidden;" id="phoneNumberExist">Phone number exist</p>
+    <div class="newData">
+        <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Phone number"><br>
+        <input type="text" id="firstName" name="firstName" placeholder="First name"><br>
+        <input type="text" id="secondName" name="secondName" placeholder="Second name"><br>
+    </div>
+        
+    <input type="button" id="updateButton" name="updateButton" value="Edit">
+
+    <p style="visibility: hidden;" class="error" id="phoneNumberExist">Phone number exist</p>
 </body>
 <script>
-    $("#registrateButton").on("click", function(){
+    $("#updateButton").on("click", function(){
         
         let token = localStorage.getItem('token');
         let prefix = "Bearer";
@@ -31,26 +101,22 @@
         let phoneNumber = $("#phoneNumber").val();
         let firstName = $("#firstName").val();
         let secondName = $("#secondName").val();
-        
+        console.log(phoneNumber, firstName, secondName)
         if (!token) {
             $("#notToken").css("visibility", "visible");
             return;
         }
-            if(phoneNumber === "" || firstName === ""|| secondName === ""){
-                $("#errorRequiredFields").css("visibility", "visible");
-                return;
-            }
-            $.ajax({
-                url: "/api/v1/user-info/edit",
-                method: "PUT",
-                dataType: "json",
-                headers: {"Authorization": `${prefix} ${token}`},
-                contentType: "application/json;  charset=utf-8",
-                data: JSON.stringify({
-                    phone_number: phoneNumber,
-                    first_name: firstName,
-                    second_name: secondName,
-            }),
+        $.ajax({
+            url: "/api/v1/user-info/edit",
+            method: "PUT",
+            dataType: "json",
+            headers: {"Authorization": `${prefix} ${token}`},
+            contentType: "application/json;  charset=utf-8",
+            data: JSON.stringify({
+                phone_number: phoneNumber,
+                first_name: firstName,
+                second_name: secondName,
+                }),
             success: function(result){
                 top.location.href = "/"
             },

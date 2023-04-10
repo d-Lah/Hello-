@@ -3,10 +3,10 @@ import jwt
 import json
 from first_app.db import db
 from first_app.models import User
+from first_app.shems import UserSchema
 from first_app.config import SECRET_KEY
+from flask import g, request, Blueprint
 from .login_required import login_required
-from flask_marshmallow import Schema, fields,Marshmallow
-from flask import Flask, g, request, render_template, flash, Blueprint
 from werkzeug.security import check_password_hash, generate_password_hash
 user_urls = Blueprint("sync",__name__)
 
@@ -18,11 +18,18 @@ def registrate_user_api():
     second_name = data.get("second_name")
     password = data.get("password")
     
+    error = UserSchema().validate({
+        "phone_number" : phone_number,
+        "first_name" : first_name,
+        "second_name" : second_name,
+        "password" : password
+    })
+    if error:
+        return{"error": error},
+
     exists = db.session.query(User.query.filter(User.phone_number==phone_number).exists()).scalar()
     if exists:
         return{"error:":"Phone number already exists"}, 400
-    if not phone_number or not first_name:
-        return{"error":"Not phone number or name"}, 400
     
     new_user = User(phone_number,
                     first_name,
@@ -43,14 +50,17 @@ def login_api():
     data = request.json
     income_phone_number = data.get("phone_number")
     income_password = data.get("password")
+    
     if not income_phone_number or not income_password:
         return {"error":"Not phone number or password"}, 400
-
+ 
     user = User.query.filter(User.phone_number==income_phone_number).first()
+    
     if not user:
         return {"error":"Wrong phone number or password"},400
+    
     if not check_password_hash(user.password,income_password):
-        return {"error": f"Паролі не співпадають {income_phone_number}"}, 400
+        return {"error": f"Wrong phone number or password"}, 400
 
     access_token = login_user(user)
 
@@ -76,6 +86,7 @@ def user_profile_edit():
     new_phone_number = data.get("phone_number")
     new_first_name = data.get("first_name")
     new_second_name = data.get("second_name")
+    
     exists = db.session.query(User.query.filter(User.phone_number==new_phone_number).exists()).scalar()
     if exists:
         return{"error:":"Phone number already exists"}, 400
@@ -84,10 +95,15 @@ def user_profile_edit():
     if not user:
         return{"error": "Request data isn't yours"},400
     
-    user.phone_number = new_phone_number
-    user.first_name = new_first_name
-    user.second_name = new_second_name
-    # db.session.add(user)
+    if new_phone_number:
+        user.phone_number = new_phone_number
+    
+    if new_first_name:
+        user.first_name = new_first_name
+    
+    if new_second_name:
+        user.second_name = new_second_name
+    
     db.session.commit()
     
     return{"status":"Update"},200

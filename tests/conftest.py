@@ -131,3 +131,53 @@ def send_data_for_post_api(app, create_file):
 def send_data_for_comment_api(app):
     text = "test"
     return {"text": text}
+
+@pytest.fixture()
+def send_data_for_user_api(app):
+    last_digits = str(random.random())[-9:]
+    phone_number = f"7414750831{last_digits}"
+    first_name = f"user{last_digits}" 
+    second_name = f"User{last_digits}"
+    password = "password"
+    return {
+        "phone_number" : phone_number,
+        "first_name" : first_name,
+        "second_name" : second_name,
+        "password" : password
+        }
+
+@pytest.fixture()
+def send_data_for_change_password(app):
+    old_password = "password"
+    new_password = "password"
+    return{
+        "old_password": old_password,
+        "new_password": new_password
+    }
+
+@pytest.fixture()
+def send_data_with_exists_phone_number_for_use_api(
+        app,
+        new_user):
+    
+    phone_number = new_user.phone_number
+    last_digits = str(random.random())[-9:]
+    first_name = f"user{last_digits}" 
+    second_name = f"User{last_digits}"
+    password = "password"
+    
+    return {
+        "phone_number" : phone_number,
+        "first_name" : first_name,
+        "second_name" : second_name,
+        "password" : password
+        }
+
+@pytest.fixture()
+def send_data_with_wrong_old_password_for_change_password(app):
+    old_password = "password0"
+    new_password = "password"
+    return{
+        "old_password": old_password,
+        "new_password": new_password
+    }
