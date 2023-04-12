@@ -1,14 +1,19 @@
 import datetime
+from flask import jsonify
 from first_app.db import db
 from first_app.config import SECRET_KEY
+from marshmallow import ValidationError
 from .login_required import login_required
 from first_app.shems import PostSchema, CommentSchema
 from first_app.models import Post, FileUpload, Comment, User
 from flask import Flask, g, request, render_template, flash, Blueprint
-post_urls = Blueprint("psot",__name__)
-schema = PostSchema(many=True)
+
+post_urls = Blueprint("post",__name__)
+
+schema = PostSchema()
 schema_comment = CommentSchema(many=True)
-@post_urls.route("/api/v1/create-post/",
+
+@post_urls.route("/api/v1/create-post",
                  methods=["POST"])
 @login_required
 def create_post_api():
@@ -18,39 +23,31 @@ def create_post_api():
     author_id = g.user_id
     author_name = user.first_name
     data = request.json
-    title = data.get('title')
-    body = data.get('body')
-    current_datetime = datetime.datetime.today() 
-    file_id = data.get('file_id')
-    
-    if not title:    
-        return {"error": "немає title"},400
-    if not body: 
-        return {"error": "немає  body"},400
-    
-    if file_id is None:
-        new_post = Post(author_id,
-                    current_datetime,
-                    title,
-                    body,
-                    file_id=file_id,
-                    user_name=author_name)
-        db.session.add(new_post)
-        db.session.commit()    
-        return {"status":"Published"}, 200
-    file = FileUpload.query.filter(FileUpload.id == file_id).first()
+    current_datetime = datetime.datetime.today()
+    title = data.get("title")
+    body = data.get("body")
+    file_id = data.get("file_id")
 
-    if not file:
-        return{"error":"error"}
-    new_post = Post(author_id,
-                    current_datetime,
-                    title,
-                    body,
-                    file_id=file.id)
-    db.session.add(new_post)
-    db.session.commit()    
+    error = PostSchema().validate({
+        "title":title,
+        "body":body})
+
+    if error:
+        return {"error": error}, 400
+
+    new_post = Post(
+        author_id = author_id,
+        user_name = author_name,
+        title = title,
+        body = body,
+        file_id = file_id,
+        created = current_datetime)
     
-    return {"status":"Published"}, 200
+    db.session.add(new_post)
+    db.session.commit()
+    
+    return {"status":"Published",
+            "post_id": new_post.id}, 200
 
 @post_urls.route("/api/v1/user-posts",
                  methods=["GET"])
@@ -60,21 +57,21 @@ def user_post_api():
     income_author_id = g.user_id
     
     posts = Post.query.filter(Post.deleted==False, Post.author_id==income_author_id).all()
-    user_posts = schema.dump(posts)
+    user_posts = PostSchema(many=True).dump(posts)
     
-    return {"posts":user_posts}, 200
+    return {"post": user_posts}, 200
 
 @post_urls.route("/api/v1/delete-post/delete/<int:post_id>",
                  methods=["DELETE"])
 @login_required
 def delete_post_api(post_id):
-    data = request.json
-
+  
     author_id = g.user_id
-    post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
-    if not post:
-        return{"error":"Wrong post_id or author_id"},400
+    error = PostSchema().validate({"id": post_id})
+    if error:
+        return{"error":"Wrong post id"},404
     
+    post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
     post.deleted = 1
     db.session.add(post)
     db.session.commit()
@@ -86,18 +83,25 @@ def delete_post_api(post_id):
 @login_required
 def update_post_api(post_id):
     data = request.json
-    update_title = data.get("update_title")
-    update_body = data.get("update_body")
+    update_title = data.get("title")
+    update_body = data.get("body")
+    update_file_id = data.get("file_id")
     update_datatime = datetime.datetime.now()
     author_id = g.user_id
 
     post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
-    if not post:
-        return{"error":"Wrong post_id"},400
     
-    post.title = update_title
-    post.body = update_body
+    if not post:
+        return{"error":"Wrong post id"},404
+    
+    if update_title:
+        post.title = update_title
+
+    if update_body:
+        post.body = update_body
+
     post.datatime = update_datatime
+    post.file_id = update_file_id
     db.session.add(post)
     db.session.commit()
     
@@ -111,17 +115,7 @@ def post_comments_api(post_id):
     post = Post.query.filter(Post.deleted== False,
                              Post.id == post_id).first()
     if not post:
-        return{"error":"Wrong post_id"},400
-    
-    post_comments = Comment.query.filter(Comment.post_id == post_id,
-                                       Comment.deleted == False).all()
-    comments = schema_comment.dump(post_comments)
-
-    return {"post":{
-            "author_id": post.author_id,
-            "user_name": post.user_name,
-            "title": post.title,
-            "body": post.body,
-            "created": post.created
-            },
-            "comments": comments}, 200
+        return{"error":"Wrong post id"},404
+        
+    post_comments = PostSchema().dump(post)
+    return {"post":post_comments}, 200

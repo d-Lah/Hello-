@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+    <title>User Posts</title>
+    <style>
+        
+        body, head{
+            font-family: "Inconsolata", sans-serif;
+            background-color: rgb(175, 175, 175);
+        }
+        a:visited, a:link{
+            text-decoration: none;
+            padding: 5px 20px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 3px;
+        }
+
+        a:active, a:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+        #post{
+            margin-left: 500px;
+        }
+        p.text{
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+        hr{
+            width: 50%;
+            border-top: 2px solid black;
+        }
+
+    </style>
+</head>
+<body>
+    <a href="/" style="margin-left: 500px;">Main page</a><br>
+    <div id="post">
+
+    </div>
+</body>
+<script>
+    let token = localStorage.getItem('token');
+    let prefix = "Bearer";
+    
+    if (token) {
+        $.ajax({
+            url: "/api/v1/user-posts",
+            method: "GET",
+            headers: {"Authorization": `${prefix} ${token}`},
+            success: function(result){
+                let post = result.post;
+
+                $.each(post, function(index){
+                    
+                    let post_id = post[index]["id"];
+                    let userName = post[index]["user_name"];
+                    let title = post[index]["title"];
+                    let body = post[index]["body"];
+                    let created = post[index]["created"];
+                    let image;
+                    let deleted;
+                    if(post[index]["file"] !== null){
+                        image = post[index]["file"]["url"];
+                        deleted = post[index]["file"]["deleted"];
+                    }    
+                    $("#post").append(
+                            `<hr>
+                            <p class="text">User name:${userName}<br>
+                            Title:${title}<br>
+                            Body:${body}<br>
+                            created:${created}</p>
+                            `);
+                    if (image){        
+                        $("#post").append(
+                        `<img src="/static/uploads/${image}" widht="310" height="310" style="border-radius: 10px;"><br>`
+                        )
+                    }
+                    $("#post").append(
+                        `<a href="/create-comment/post/${post_id}" style="margin-top: 10px;">Comment</a><br>
+                        <a href="/post-comments/post/${post_id}" style="margin-top: 10px;">Comments</a><br>
+                        <a href = "/user-posts/update/${post_id}" style="margin-top: 10px;">Update post</a><br>`
+                    );
+                });
+            }
+        });
+    }       
+    </script>
+</html>

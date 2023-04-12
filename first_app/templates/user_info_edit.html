@@ -13,7 +13,7 @@
             font-family: "Inconsolata", sans-serif;
             background-color: rgb(175, 175, 175);
         }
-        .data{
+        .newData{
             margin-top: 10px;
             margin-left: 25px;
         }
@@ -34,7 +34,7 @@
             color: black;
             background-color: white;
         }
-        #registrateButton{
+        #updateButton{
             text-decoration: none;
             padding: 3px 13px;
             text-align: center;
@@ -46,7 +46,7 @@
             margin-left: 25px;
             border: none;
         }
-        #registrateButton:hover{
+        #updateButton:hover{
             text-decoration: none;
             color: black;
             background-color: white;
@@ -66,16 +66,6 @@
             margin-top: 6px;
             margin-bottom: 10px;
         }
-        #password{
-            padding: 7px 15px;
-            margin-top: 6px;
-            margin-bottom: 10px;
-        }
-        #repeatingPassword{
-            padding: 7px 15px;
-            margin-top: 6px;
-            margin-bottom: 10px;
-        }
         .error{
             color: red;
             font-size: 17px;
@@ -88,61 +78,54 @@
     </style>
 </head>
 <body>
-    
     <div class="navigateButton">
         <a href="/"> Main page </a>
     </div>
 
-    <div class="data">
-        <input type="text" id="phoneNumber" placeholder="PhoneNumber" name="phoneNumber"><br>
-        <input type="text" id="firstName" placeholder="FirstName" name="firstName"><br>
-        <input type="text" id="secondName" placeholder="SecondName" name="secondName"><br>
-        <input type="password" id="password" placeholder="Password" name="password"><br>
-        <input type="password" id="repeatingPassword" placeholder="RepeatingPassword" name="repeatingPassword"><br>
+    <div class="newData">
+        <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Phone number"><br>
+        <input type="text" id="firstName" name="firstName" placeholder="First name"><br>
+        <input type="text" id="secondName" name="secondName" placeholder="Second name"><br>
     </div>
-    
-    <input type="button" id="registrateButton" name="registrateButton" value="Registrate Button">
-    
-    <p style="visibility: hidden;" class="error" id="errorRequiredFields">Required fields is empty</p>
-    <p style="visibility: hidden;" class="error" id="wrongRepeatingPassword">Wrong repeating password</p>
+        
+    <input type="button" id="updateButton" name="updateButton" value="Edit">
+
     <p style="visibility: hidden;" class="error" id="phoneNumberExist">Phone number exist</p>
-
+</body>
 <script>
-    $("#registrateButton").on("click", function(){
-
+    $("#updateButton").on("click", function(){
+        
+        let token = localStorage.getItem('token');
+        let prefix = "Bearer";
+        
         let phoneNumber = $("#phoneNumber").val();
         let firstName = $("#firstName").val();
         let secondName = $("#secondName").val();
-        let password = $("#password").val();
-        let repeatingPassword = $("#repeatingPassword").val();
-
-        if (repeatingPassword !== password){
-            $("#wrongRepeatingPassword").css("visibility", "visible");
-            return
-        }
-        if(phoneNumber === "" || firstName === ""|| secondName === "" || password === ""){
-            $("#errorRequiredFields").css("visibility", "visible");
-            return
+        console.log(phoneNumber, firstName, secondName)
+        if (!token) {
+            $("#notToken").css("visibility", "visible");
+            return;
         }
         $.ajax({
-            url: "/api/v1/register-user",
-            method: "POST",
+            url: "/api/v1/user-info/edit",
+            method: "PUT",
             dataType: "json",
+            headers: {"Authorization": `${prefix} ${token}`},
             contentType: "application/json;  charset=utf-8",
             data: JSON.stringify({
-                
                 phone_number: phoneNumber,
                 first_name: firstName,
                 second_name: secondName,
-                password: password,
-            }),
+                }),
             success: function(result){
-                top.location.href = "/login"    
+                top.location.href = "/"
             },
             error: function(request, status, error){
                 $("#phoneNumberExist").css("visibility", "visible");
+                return;
             }
+            });
+        
         });
-    });
 </script>
 </html>

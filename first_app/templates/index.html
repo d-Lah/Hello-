@@ -3,50 +3,90 @@
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <title>Page Title</title>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+<style>
+    
+    body, head{
+        font-family: "Inconsolata", sans-serif;
+        background-color: rgb(175, 175, 175);
+    }
+    
+</style>
 </head>
 <body>
-    <div>
-        <a href="/registrate" style="visibility: visible;" id="registerPageLink"> Register page </a>
-        <a href="/login" style="visibility: visible;" id="loginPageLink"> Login Page </a><br>
-    </div>
-    <header> 
-        <h3><p id="userFullName"></p></h3>
-        <input style="visibility: hidden;" type="button" id="logOut" name="logOut" value="Log out">
-    </header> 
-    <h1 id="textHeading">My First Heading</h1>
-    <p id="textParagraph">My first paragraph.</p>
 
-    <input type="text" name="input" id="changeTextInput">
+    <div class="w3-top">
+        <div class="w3-row w3-padding w3-black">
+            
+            <div class="w3-col s3 w3-right">
+                <a href="/login" style="visibility: visible;" id="loginPageLink" class="w3-button w3-block w3-black"> Login Page </a>
+            </div>
+            
+            <div class="w3-col s3 w3-right">
+                <a href="/registrate" style="visibility: visible;" id="registerPageLink" class="w3-button w3-block w3-black"> Register page </a>
+            </div>
 
+            <div class="w3-row w3-left">
+                <p id="userFullName" class="w3-block w3-black"></p>
+            </div>
+            <div class="w3-row w3-left" style="padding-top: 7px; padding-left: 48px;">
+                <input style="visibility: hidden;" type="button" id="logOut" name="logOut" value="Log out" class="w3-button w3-block w3-black">
+            </div>
+        </div>
+    </div><br>
+    <header class="w3-row w3-bottomleft w3-padding-24">
+        <div class="w3-row w3-padding w3-black"></div>
+            <div class=" w3-col s3">
+                <a href="/user-info/edit" style="visibility: hidden;" id="editUserInfo" class="w3-button w3-block w3-black"> Edit user info </a>
+            </div>
+            
+            <div class=" w3-col s3">
+                <a href="/user-info/change-password" style="visibility: hidden;" id="changePassword" class="w3-button w3-block w3-black"> Change password </a>        
+            </div>
+
+            <div class=" w3-col s3">
+            <a href="/create-post" style="visibility: hidden;" id="createPost" class="w3-button w3-block w3-black"> Create post </a>
+            </div>
+                
+            <div class=" w3-col s3">
+                <a href="/user-posts" style="visibility: hidden;" id="userPosts" class="w3-button w3-block w3-black"> User Posts </a>
+            </div>
+        </div>
+    </header>
+        <div class="w3-bottomleft w3-padding-8">
+            <p id="errorUserToken" style="visibility: hidden; color: crimson;">User doesn't login</p>    
+        </div>
 </body>
 
 <script type="text/javascript">
-    var token = localStorage.getItem('token');
-    if (token){
+    let token = localStorage.getItem('token');
+    let prefix = "Bearer";
+    
+    if (token) {
         $( "#loginPageLink").css( "visibility", "hidden" );
         $( "#registerPageLink").css( "visibility", "hidden" );
+        $("#createPost").css("visibility","visible");
+        $("#userPosts").css("visibility","visible");
         $("#logOut").css("visibility","visible");
+        $("#editUserInfo").css("visibility", "visible");
+        $("#changePassword").css("visibility", "visible");
         $.ajax({
             url: "/api/v1/user-info",
             method: "GET",
-            headers: {"Authorization": token},
+            headers: {"Authorization": `${prefix} ${token}`},
             success: function(result){
                 $("#userFullName").text(result.info);
+            },
+            error: function(request, statusCode, error){
+                $("#errorUserToken").css("visibility", "visible");
             }
         })
-    }
+    
     $("#logOut").on("click", function(){
         localStorage.clear();
         location.reload();
     });
-</script>
-
-<script type="text/javascript">
-    $( "#changeTextInput" ).on('input', function() {
-        console.log(this);
-        var incomeText = $(this).val();
-        $( "#textHeading" ).text(incomeText);
-        $( "#textParagraph" ).text(incomeText);
-    });
+}
 </script>
 </html>

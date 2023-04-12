@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+    <title>Create post</title>
+    <style>
+        
+        body, head{
+            font-family: "Inconsolata", sans-serif;
+            background-color: rgb(175, 175, 175);
+        }
+        
+        #post{
+            padding: 5px 20px 5px;
+            color: aliceblue;
+            background-color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 5px;
+            margin-left: 25px;
+        }
+        #post:hover{
+            color: black;
+            background-color: white;
+        }
+        .post{
+            margin-left: 25px;
+            border: none;
+            margin-top: 6px;
+        }
+        a:visited, a:link{
+            text-decoration: none;
+            padding: 5px 20px;
+            text-align: center;
+            display: inline-block;
+            color: aliceblue;
+            border-radius: 5px;
+            background-color: rgb(0, 0, 0) ;
+            margin-top: 3px;
+            margin-left: 2px;
+        }
+
+        a:active, a:hover{
+            text-decoration: none;
+            color: black;
+            background-color: white;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <a href="/">Main page</a><br>
+    
+    <div style="color: aliceblue; margin-top:10px;">
+        <input type="text" id="title" name="title" placeholder="Title" class="post" style="border-radius: 4px;"><br>
+        <input type="text" id="body" name="body" placeholder="Body" class="post" style="border-radius: 4px;"><br>
+        <input type="file" id="file" class="post" multiple>
+    </div><br>
+
+    <input type="button" id="post" name="post" value="Post">
+    
+    <p style="visibility: hidden; color: greenyellow; font-size: 17px; font-weight: 600; margin-left: 25px;" id="status">Published</p>
+    <p style="visibility: hidden; color: red; font-size: 17px; font-weight: 600; margin-left: 25px;" id="notTitleOrBody">Not title or body</p>
+    <p style="visibility: hidden; color:red; font-size: 17px; font-weight: 600; margin-left: 25px;" id="wrongFileExtension">Wrong file extension</p>
+
+</body>
+
+<script>
+    $("#post").on("click", function(){
+
+        let token = localStorage.getItem('token');
+        let prefix = "Bearer";        
+        
+        let title = $("#title").val();
+        let body = $("#body").val();
+        let file = document.getElementById("file").files[0];
+        
+        let formData = new FormData();
+        
+        if(title == "" || body == ""){
+            return $("#notTitleOrBody").css("visibility", "visible");
+            return;
+        }
+        
+        if (!token) {
+            $("#notToken").css("visibility", "visible");
+            return;
+        }
+        if(!file){
+            $.ajax({      
+                url: "/api/v1/create-post",
+                method: "POST",
+                dataType: "json",
+                headers: {"Authorization": `${prefix} ${token}`},
+                contentType: "application/json;  charset=utf-8",
+                data: JSON.stringify({
+                    title: title,
+                    body: body,
+                    file_id: null
+                }),
+                success: function(result){
+                    return $("#status").css("visibility", "visible");        
+                }
+            });
+            return
+        }
+        formData.append("file", file);
+        $.ajax({
+            url: "/api/v1/upload-file",
+            method: "POST",
+            processData: false,
+            contentType:false,
+            data: formData,
+            success: function(result){
+                file_id = result.id
+                $.ajax({      
+                    url: "/api/v1/create-post",
+                    method: "POST",
+                    dataType: "json",
+                    headers: {"Authorization": `${prefix} ${token}`},
+                    contentType: "application/json;  charset=utf-8",
+                    data: JSON.stringify({
+                        title: title,
+                        body: body,
+                        file_id: file_id
+                    }),
+                    success: function(result){
+                        return $("#status").css("visibility", "visible");        
+                    }
+                }); 
+            },
+            error: function(request,status,error){
+                return $("#wrongFileExtension").css("visibility", "visible");
+            }
+        });
+            
+                
+        });
+</script>
+</html>
