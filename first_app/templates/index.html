@@ -11,6 +11,18 @@
         font-family: "Inconsolata", sans-serif;
         background-color: rgb(175, 175, 175);
     }
+    #post{
+            margin-left: 500px;
+        }
+        p.text{
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+        hr{
+            width: 50%;
+            border-top: 2px solid black;
+        }
     
 </style>
 </head>
@@ -57,6 +69,10 @@
         <div class="w3-bottomleft w3-padding-8">
             <p id="errorUserToken" style="visibility: hidden; color: crimson;">User doesn't login</p>    
         </div>
+        <div id="post">
+
+        </div>
+
 </body>
 
 <script type="text/javascript">
@@ -81,12 +97,48 @@
             error: function(request, statusCode, error){
                 $("#errorUserToken").css("visibility", "visible");
             }
-        })
+        });
+        $.ajax({
+            url: "/api/v1/all-posts",
+            method: "GET",
+            headers: {"Authorization": `${prefix} ${token}`},
+            success: function(result){
+                let post = result.post;
+
+                $.each(post, function(index){
+                    
+                    let post_id = post[index]["id"];
+                    let userName = post[index]["user_name"];
+                    let title = post[index]["title"];
+                    let body = post[index]["body"];
+                    let created = post[index]["created"];
+                    let image;
+                    let deleted;
+                    if(post[index]["file"] !== null){
+                        image = post[index]["file"]["url"];
+                        deleted = post[index]["file"]["deleted"];
+                    }    
+                    $("#post").append(
+                            `<hr>
+                            <p class="text">User name:${userName}<br>
+                            Title:${title}<br>
+                            Body:${body}<br>
+                            created:${created}</p>
+                            `);
+                    if (image){        
+                        $("#post").append(
+                        `<img src="/static/uploads/${image}" widht="310" height="310" style="border-radius: 10px;"><br>`
+                        )
+                    }
+                });
+            }
+        });
     
     $("#logOut").on("click", function(){
         localStorage.clear();
         location.reload();
     });
+
 }
 </script>
 </html>

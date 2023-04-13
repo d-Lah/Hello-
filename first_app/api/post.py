@@ -114,8 +114,17 @@ def post_comments_api(post_id):
     
     post = Post.query.filter(Post.deleted== False,
                              Post.id == post_id).first()
+    # post = Post.query.join(Post.comments).filter(Post.deleted == False, Post.id == post_id, Comment.deleted == True).first()
     if not post:
-        return{"error":"Wrong post id"},404
-        
+        return{"error":"Wrong post id"},404    
     post_comments = PostSchema().dump(post)
     return {"post":post_comments}, 200
+
+@post_urls.route("/api/v1/all-posts",
+                 methods=["GET"])
+def all_post_api():
+        
+    posts = Post.query.filter(Post.deleted==False).all()
+    user_posts = PostSchema(many=True).dump(posts)
+    
+    return {"post": user_posts}, 200

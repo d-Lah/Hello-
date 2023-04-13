@@ -35,6 +35,7 @@ def registrate_user_api():
                     first_name,
                     second_name,
                     generate_password_hash(password))
+    
     db.session.add(new_user)
     db.session.commit()
     
