@@ -35,13 +35,14 @@ def create_post_api():
     if error:
         return {"error": error}, 400
 
-    new_post = Post(
-        author_id = author_id,
-        user_name = author_name,
-        title = title,
-        body = body,
-        file_id = file_id,
-        created = current_datetime)
+    new_post = Post()
+
+    new_post.author_id = author_id
+    new_post.user_name = author_name
+    new_post.title = title
+    new_post.body = body
+    new_post.file_id = file_id
+    new_post.created = current_datetime
     
     db.session.add(new_post)
     db.session.commit()
@@ -114,7 +115,6 @@ def post_comments_api(post_id):
     
     post = Post.query.filter(Post.deleted== False,
                              Post.id == post_id).first()
-    # post = Post.query.join(Post.comments).filter(Post.deleted == False, Post.id == post_id, Comment.deleted == True).first()
     if not post:
         return{"error":"Wrong post id"},404    
     post_comments = PostSchema().dump(post)

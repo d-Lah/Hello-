@@ -3,7 +3,6 @@ import os
 from flask import Flask
 from first_app.db import db
 from flask_migrate import Migrate
-from first_app.views.post import post
 from first_app.views.index import index
 from first_app.views.login import login
 from first_app.api.user import user_urls
@@ -17,6 +16,7 @@ from first_app.views.update_post import update_post
 from first_app.views.user_info_edit import user_info_edit
 from first_app.views.update_comment import update_comment
 from first_app.views.change_password import change_password
+from first_app.views.post_with_comments import post_with_comments
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -52,7 +52,7 @@ def create_app(test_config=None):
     app.register_blueprint(login)
     app.register_blueprint(create_post)
     app.register_blueprint(user_posts)
-    app.register_blueprint(post)
+    app.register_blueprint(post_with_comments)
     app.register_blueprint(user_info_edit)
     app.register_blueprint(update_post)
     app.register_blueprint(change_password)

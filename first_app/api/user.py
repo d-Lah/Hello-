@@ -31,10 +31,16 @@ def registrate_user_api():
     if exists:
         return{"error:":"Phone number already exists"}, 400
     
-    new_user = User(phone_number,
-                    first_name,
-                    second_name,
-                    generate_password_hash(password))
+    # new_user = User(phone_number,
+    #                 first_name,
+    #                 second_name,
+    #                 generate_password_hash(password))
+    new_user = User()
+    new_user.phone_number = phone_number
+    new_user.first_name = first_name
+    new_user.second_name = second_name
+    new_user.password = generate_password_hash(password)
+
     
     db.session.add(new_user)
     db.session.commit()

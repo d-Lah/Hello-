@@ -1,0 +1,28 @@
+body, head{
+    font-family: "Inconsolata", sans-serif;
+    background-color: rgb(175, 175, 175);
+}
+
+#post{
+        margin-left: 500px;
+}
+
+p.text{
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+hr{
+    width: 50%;
+    border-top: 2px solid black;
+}
+
+a:visited, a:link{
+    text-decoration: none;
+    display: inline-block;
+}
+
+a:active, a:hover{
+    text-decoration: none;
+}

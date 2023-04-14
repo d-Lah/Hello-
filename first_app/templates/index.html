@@ -2,29 +2,11 @@
 <html>
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="/static/js/authentication.js"></script>
 <title>Page Title</title>
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
-<style>
-    
-    body, head{
-        font-family: "Inconsolata", sans-serif;
-        background-color: rgb(175, 175, 175);
-    }
-    #post{
-            margin-left: 500px;
-        }
-        p.text{
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: 2px;
-        }
-        hr{
-            width: 50%;
-            border-top: 2px solid black;
-        }
-    
-</style>
+<link rel="stylesheet" href="/static/css/index.css">
 </head>
 <body>
 
@@ -79,7 +61,7 @@
     let token = localStorage.getItem('token');
     let prefix = "Bearer";
     
-    if (token) {
+    if (isAuthenticated()) {
         $( "#loginPageLink").css( "visibility", "hidden" );
         $( "#registerPageLink").css( "visibility", "hidden" );
         $("#createPost").css("visibility","visible");
@@ -98,10 +80,17 @@
                 $("#errorUserToken").css("visibility", "visible");
             }
         });
+        
+        $("#logOut").on("click", function(){
+            localStorage.clear();
+            location.reload();
+        });
+    
+    }
         $.ajax({
             url: "/api/v1/all-posts",
             method: "GET",
-            headers: {"Authorization": `${prefix} ${token}`},
+            headers: authHeaders(),
             success: function(result){
                 let post = result.post;
 
@@ -119,26 +108,26 @@
                         deleted = post[index]["file"]["deleted"];
                     }    
                     $("#post").append(
-                            `<hr>
+                        `
+                        <hr>
+                        <a href="/post/${post_id}">
                             <p class="text">User name:${userName}<br>
                             Title:${title}<br>
                             Body:${body}<br>
                             created:${created}</p>
-                            `);
+                        </a><br>
+                    `);
                     if (image){        
                         $("#post").append(
-                        `<img src="/static/uploads/${image}" widht="310" height="310" style="border-radius: 10px;"><br>`
-                        )
+                        `
+                        <a href="/post/${post_id}">
+                        <img src="/static/uploads/${image}" widht="370" height="370" style="border-radius: 10px;"><br>
+                        </a>
+                        `);
                     }
                 });
             }
         });
     
-    $("#logOut").on("click", function(){
-        localStorage.clear();
-        location.reload();
-    });
-
-}
 </script>
 </html>

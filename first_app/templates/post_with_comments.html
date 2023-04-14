@@ -7,48 +7,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+    <link rel="stylesheet" href="/static/css/post_with_comments.css">
     <title>Document</title>
-    <style>
-        body, head{
-            font-family: "Inconsolata", sans-serif;
-            background-color: rgb(175, 175, 175);
-        }
-        a:visited, a:link{
-            text-decoration: none;
-            padding: 5px 20px;
-            text-align: center;
-            display: inline-block;
-            color: aliceblue;
-            border-radius: 5px;
-            background-color: rgb(0, 0, 0) ;
-            margin-top: 3px;
-        }
-
-        a:active, a:hover{
-            text-decoration: none;
-            color: black;
-            background-color: white;
-        }
-        #post{
-            margin-left: 500px;
-        }
-        p.text{
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: 2px;
-        }
-        hr{
-            width: 50%;
-            border-top: 2px solid black;
-        }
-        #comments{
-            margin-left: 500px;
-        }
-
-        .navigateButton{
-            margin-left: 500px;
-        }
-    </style>
 </head>
 <body>
     
@@ -60,7 +20,14 @@
     <div id="post">
 
     </div>
+    <div class="createComment">
+        <br>
+        <textarea id="comment" cols="55" rows="5" style="resize: none;"></textarea><br>
+        <input id="createComment" type="button" value="Create comment">
+    </div>
     <div id="comments">
+        <p class="text">Comments</p>
+
     </div>
     <p style="visibility: hidden; color: red; font-size: 17px; font-weight: 600; margin-left: 251px;" id="wrongPostId">Wrong post id</p>
 </body>
@@ -70,7 +37,7 @@
     let prefix = "Bearer";
     let urlPathName = window.location.pathname;
     let splitUrlPathName = urlPathName.split("/");
-    let postId = splitUrlPathName[3];
+    let postId = splitUrlPathName[2];
 
     if (token) {
         $.ajax({
@@ -91,7 +58,8 @@
                         deleted = post["file"]["deleted"];
                     }    
                 $("#post").append(
-                        `<hr>
+                        `
+                        <hr>
                         <p class="text"> User name:${userName}<br>
                         Title :${title}<br>
                         Body :${body}<br>
@@ -99,7 +67,7 @@
                         `);
                         if (image){        
                             $("#post").append(
-                            `<img src="/static/uploads/${image}" widht="310" height="310" style="border-radius: 10px;"><br>`
+                            `<img src="/static/uploads/${image}" widht="370" height="370" style="border-radius: 10px;"><br>`
                         )}
                     
                 $.each(post["comments"], function(index){

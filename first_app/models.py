@@ -12,21 +12,12 @@ from sqlalchemy.orm import relationship
 
 class User(db.Model):
     __tablename__ = 'user'
-    id = Column(Integer, primary_key=True)
-    phone_number = Column(Text(), unique = True)
-    first_name = Column(Text(), unique =False)
-    second_name = Column(Text(), unique =False)
-    password = Column(Text(), unique =False)
-    
-    def __init__(self, phone_number=None, 
-                 first_name=None, 
-                 second_name=None, 
-                 password=None):
-        self.phone_number = phone_number
-        self.first_name = first_name
-        self.second_name = second_name
-        self.password = password
-    
+    id = db.Column(Integer, primary_key=True)
+    phone_number = db.Column(Text(), unique = True)
+    first_name = db.Column(Text(), unique =False)
+    second_name = db.Column(Text(), unique =False)
+    password = db.Column(Text(), unique =False)
+        
     def __repr__(self):
         return f'<User {self.phone_number}>'
     
@@ -43,12 +34,6 @@ class FileUpload(db.Model):
     url = Column(String())
     post = relationship("Post", back_populates="file")
     deleted = Column(Boolean(), default=False)
-    def __init__(self, url=None,
-                 post_id=None,
-                 deleted=None):
-        self.url = url
-        self.post_id = post_id
-        self.deleted = deleted
 
 class Comment(db.Model):
     __tablename__='comments'
@@ -59,20 +44,7 @@ class Comment(db.Model):
     created = Column(TIMESTAMP())
     text = Column(Text(100),nullable=False)
     deleted = Column(Boolean(),default=False)
-    def __init__(self,author_id=None,
-                    post_id=None,
-                    created=None,
-                    text=None,
-                    deleted=None,
-                    user_name=None
-                    ):
-        
-        self.author_id = author_id
-        self.post_id = post_id
-        self.created = created
-        self.text = text
-        self.deleted = deleted
-        self.user_name = user_name
+
     def __repr__(self):
         return f'<Author id {self.author_id}>'
 
@@ -90,19 +62,6 @@ class Post(db.Model):
     file = relationship("FileUpload", back_populates="post", primaryjoin=FileUpload.id==file_id)
     
     comments = relationship("Comment", primaryjoin="and_(Post.id == Comment.post_id,Comment.deleted==False)", backref = "post")
-    def __init__(self,author_id=None,
-                 created=None, title=None,
-                 body=None,
-                 deleted=None,
-                 file_id=None,
-                 user_name=None,
-                 ):
-        self.author_id = author_id
-        self.created = created
-        self.title = title
-        self.body = body
-        self.deleted = deleted
-        self.file_id = file_id
-        self.user_name = user_name
+
     def __repr__(self):
         return f'<Author id {self.author_id}>'
