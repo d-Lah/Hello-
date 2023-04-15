@@ -14,7 +14,6 @@ from first_app.views.user_posts import user_posts
 from first_app.views.create_post import create_post
 from first_app.views.update_post import update_post
 from first_app.views.user_info_edit import user_info_edit
-from first_app.views.update_comment import update_comment
 from first_app.views.change_password import change_password
 from first_app.views.post_with_comments import post_with_comments
 
@@ -56,7 +55,6 @@ def create_app(test_config=None):
     app.register_blueprint(user_info_edit)
     app.register_blueprint(update_post)
     app.register_blueprint(change_password)
-    app.register_blueprint(update_comment)
     return app
 
 if __name__=='__main__':

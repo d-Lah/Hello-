@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <script src="/static/js/authentication.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
     <link rel="stylesheet" href="/static/css/post_with_comments.css">
+    
     <title>Document</title>
 </head>
 <body>
@@ -20,30 +24,34 @@
     <div id="post">
 
     </div>
+    
     <div class="createComment">
         <br>
-        <textarea id="comment" cols="55" rows="5" style="resize: none;"></textarea><br>
+        <textarea id="text" cols="55" rows="5" style="resize: none;" placeholder="Write a comment"></textarea><br>
         <input id="createComment" type="button" value="Create comment">
+        <div id="error" hidden>
+            <p class="error" id="notText">Not text</p>
+        </div>
     </div>
+    
     <div id="comments">
         <p class="text">Comments</p>
-
     </div>
     <p style="visibility: hidden; color: red; font-size: 17px; font-weight: 600; margin-left: 251px;" id="wrongPostId">Wrong post id</p>
 </body>
 <script>
-    
     let token = localStorage.getItem('token');
     let prefix = "Bearer";
     let urlPathName = window.location.pathname;
     let splitUrlPathName = urlPathName.split("/");
     let postId = splitUrlPathName[2];
+    var userId = parseJWT(token)["user_id"];
 
-    if (token) {
+    if (isAuthenticated()) {
         $.ajax({
             url: `/api/v1/post-comments/post/${postId}`,
             method: "GET",
-            headers: {"Authorization": `${prefix} ${token}`},
+            headers: authHeaders(),
             success: function(result){
                 let post = result.post;
     
@@ -77,16 +85,96 @@
                     let text = comments[index]["text"];
                     let created = comments[index]["created"];
                     let commentId = comments[index]["id"]
+                    let authorId = comments[index]["author_id"]
+
                     $("#comments").append(
                         `<hr>
                         <p class="text">
-                        Comments: <br>
                         Author full name:${userName}<br>
                         Text :${text}<br>
                         created:${created}<br>
-                        </p>
-                        <a href="/update-comment/update/${commentId}">Update comment</a>`
-                        )
+                        </p>`);
+
+                    if(authorId == userId)
+                        $("#comments").append(
+                            `
+                            <div id = "updateButton${commentId}">
+                                <input class="button" id = "updateComment${commentId}" type="button" value="Update comment">
+                            </div>
+
+                            <div id ="newData${commentId}" hidden>
+                                
+                                <textarea id = "newText${commentId}" cols="55" rows="5" style="resize: none;" placeholder="Add comment">${text}</textarea><br>
+                                <input style="margin-top:7px;" class="button" type="button" value="Update" id="update${commentId}"><br>
+                                <input style="margin-top:15px;" class="button" type="button" id="delete${commentId}" name="delete" value="Delete"><br>
+
+                                <p hidden class = "text" id="confirmMessange${commentId}">You wonna delete comment?</p>
+                                
+                                <div id = "confirmButtons${commentId}" hidden>
+                                    <input class = "button" type="button" value="No" id="confirmNo${commentId}" name="confirmNo">
+                                    <input class = "button" type="button" value="Yes" id="confirmYes${commentId}" name="confirmYes">
+                                </div>
+
+                                <input style="margin-top:15px;" class = "button" type="button" hidden value="Cancel" id="cancel${commentId}">
+                            
+                                <div id="error${commentId}" hidden>                                                        
+                                    <p class="error" id="notText${commentId}">Not text</p>
+                                </div>
+                            </div>
+                            `
+                        );
+                        $(`#updateComment${commentId}`).on("click", function(){
+                            $(`#newData${commentId}`).attr("hidden", false);
+                            $(`#updateButton${commentId}`).attr("hidden", true);
+                        });
+
+                        $(`#update${commentId}`).on("click", function(){
+                            let updateText = $(`#newText${commentId}`).val();
+                            
+                            if(updateText===""){
+                                $(`#error${commentId}`).attr("hidden", false)
+                                return
+                            }
+                            $.ajax({
+                                url: `/api/v1/update-comment/update/${commentId}`,
+                                method: "PUT",
+                                dataType: "json",
+                                headers: authHeaders(),
+                                contentType: "application/json;  charset=utf-8",
+                                data: JSON.stringify({
+                                    text: updateText
+                                }),
+                                success: function(result){
+                                    window.location.reload();
+                                }
+                            });
+                        });
+
+                        $(`#delete${commentId}`).on("click", function(){
+                            $(`#confirmMessange${commentId}`).attr("hidden", false);
+                            $(`#confirmButtons${commentId}`).attr("hidden", false)
+                        });
+
+                        $(`#confirmYes${commentId}`).on("click", function(){
+                            $.ajax({
+                                url: `/api/v1/delete-comment/delete/${commentId}`,
+                                method: "DELETE",
+                                headers: authHeaders(),
+                                success: function(result){
+                                    window.location.reload();
+                                },
+                            }); 
+                        });
+
+                        $(`#confirmNo${commentId}`).on("click", function(){
+                            $(`#confirmMessange${commentId}`).attr("hidden", true);
+                            $(`#confirmButtons${commentId}`).attr("hidden", true);
+                        });
+
+                        $(`#cancel${commentId}`).on("click", function(){
+                            $(`#newData${commentId}`).attr("hidden", true);
+                            $(`#updateButton${commentId}`).attr("hidden", false);
+                        });
                 });
                 
             },
@@ -96,6 +184,27 @@
                 }
             }
         });
-    }   
+        $("#createComment").click(function(){
+            let text = $("#text").val();
+            
+            if(text===""){
+                $("#error").attr('hidden', false);
+                return
+            }
+            $.ajax({
+                url: `/api/v1/create-comment/post/${postId}`,
+                method: "POST",
+                dataType: "json",
+                headers: authHeaders(),
+                contentType: "application/json;  charset=utf-8",
+                data: JSON.stringify({
+                    text: text
+                }),
+                success: function(){
+                    window.location.reload()
+                }
+            });
+        });
+    }
 </script>
 </html>

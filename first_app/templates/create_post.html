@@ -4,52 +4,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="/static/js/authentication.js"></script>
+    
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+    <link rel="stylesheet" href="/static/css/create_post.css">
+    
     <title>Create post</title>
-    <style>
-        
-        body, head{
-            font-family: "Inconsolata", sans-serif;
-            background-color: rgb(175, 175, 175);
-        }
-        
-        #post{
-            padding: 5px 20px 5px;
-            color: aliceblue;
-            background-color: rgb(0, 0, 0);
-            border: none;
-            border-radius: 5px;
-            margin-left: 25px;
-        }
-        #post:hover{
-            color: black;
-            background-color: white;
-        }
-        .post{
-            margin-left: 25px;
-            border: none;
-            margin-top: 6px;
-        }
-        a:visited, a:link{
-            text-decoration: none;
-            padding: 5px 20px;
-            text-align: center;
-            display: inline-block;
-            color: aliceblue;
-            border-radius: 5px;
-            background-color: rgb(0, 0, 0) ;
-            margin-top: 3px;
-            margin-left: 2px;
-        }
-
-        a:active, a:hover{
-            text-decoration: none;
-            color: black;
-            background-color: white;
-        }
-    </style>
 </head>
 
 <body>
@@ -87,7 +50,7 @@
             return;
         }
         
-        if (!token) {
+        if (!isAuthenticated()) {
             $("#notToken").css("visibility", "visible");
             return;
         }
