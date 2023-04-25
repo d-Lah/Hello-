@@ -31,10 +31,6 @@ def registrate_user_api():
     if exists:
         return{"error:":"Phone number already exists"}, 400
     
-    # new_user = User(phone_number,
-    #                 first_name,
-    #                 second_name,
-    #                 generate_password_hash(password))
     new_user = User()
     new_user.phone_number = phone_number
     new_user.first_name = first_name
@@ -44,7 +40,7 @@ def registrate_user_api():
     
     db.session.add(new_user)
     db.session.commit()
-    
+    os.mkdir(f"static/media/blog_photo/{new_user.id}")    
     return {}, 200
 
 def login_user(user):

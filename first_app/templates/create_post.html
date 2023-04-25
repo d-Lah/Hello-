@@ -76,11 +76,12 @@
         $.ajax({
             url: "/api/v1/upload-file",
             method: "POST",
+            headers: {"Authorization": `${prefix} ${token}`},
             processData: false,
             contentType:false,
             data: formData,
             success: function(result){
-                file_id = result.id
+                let fileId = result.id
                 $.ajax({      
                     url: "/api/v1/create-post",
                     method: "POST",
@@ -90,7 +91,7 @@
                     data: JSON.stringify({
                         title: title,
                         body: body,
-                        file_id: file_id
+                        file_id: fileId
                     }),
                     success: function(result){
                         return $("#status").css("visibility", "visible");        

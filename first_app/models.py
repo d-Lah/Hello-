@@ -31,6 +31,8 @@ class User(db.Model):
 class FileUpload(db.Model):
     __tablename__ = 'file_upload'
     id = Column(Integer,primary_key=True)
+    author_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    file_type = Column(Text(), unique = False)
     url = Column(String())
     post = relationship("Post", back_populates="file")
     deleted = Column(Boolean(), default=False)

@@ -47,13 +47,6 @@ class CommentSchema(ma.Schema):
     created = fields.DateTime()
     text = fields.Str()
     deleted = fields.Bool()
-    
-    @validates("id")
-    def validate_id(self, id):
-        
-        comment = Comment.query.filter(Comment.id==id).first()
-        if not comment:
-            raise ValidationError({"error":"Wrong comment id"})
 
     @validates("post_id")
     def validate_post_id(self, post_id):

@@ -57,7 +57,10 @@ def user_post_api():
     
     income_author_id = g.user_id
     
-    posts = Post.query.filter(Post.deleted==False, Post.author_id==income_author_id).all()
+    posts = Post.query.filter(
+        Post.deleted==False,
+        Post.author_id==income_author_id).all()
+    
     user_posts = PostSchema(many=True).dump(posts)
     
     return {"post": user_posts}, 200
@@ -68,11 +71,15 @@ def user_post_api():
 def delete_post_api(post_id):
   
     author_id = g.user_id
-    error = PostSchema().validate({"id": post_id})
-    if error:
+    
+    
+    post = Post.query.filter(
+        Post.id==post_id,
+        Post.author_id==author_id).first()
+    
+    if not post:
         return{"error":"Wrong post id"},404
     
-    post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
     post.deleted = 1
     db.session.add(post)
     db.session.commit()
@@ -90,7 +97,9 @@ def update_post_api(post_id):
     update_datatime = datetime.datetime.now()
     author_id = g.user_id
 
-    post = Post.query.filter(Post.id==post_id, Post.author_id==author_id).first()
+    post = Post.query.filter(
+        Post.id==post_id,
+        Post.author_id==author_id).first()
     
     if not post:
         return{"error":"Wrong post id"},404
@@ -113,10 +122,11 @@ def update_post_api(post_id):
 @login_required
 def post_comments_api(post_id):
     
-    post = Post.query.filter(Post.deleted== False,
+    post = Post.query.filter(Post.deleted == False,
                              Post.id == post_id).first()
     if not post:
-        return{"error":"Wrong post id"},404    
+        return{"error":"Wrong post id"},404
+        
     post_comments = PostSchema().dump(post)
     return {"post":post_comments}, 200
 

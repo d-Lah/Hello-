@@ -36,6 +36,7 @@
                     
                     let post_id = post[index]["id"];
                     let userName = post[index]["user_name"];
+                    let userId = post[index]["author_id"]
                     let title = post[index]["title"];
                     let body = post[index]["body"];
                     let created = post[index]["created"];
@@ -54,7 +55,7 @@
                             `);
                     if (image){        
                         $("#post").append(
-                        `<img src="/static/uploads/${image}" widht="370" height="370" style="border-radius: 10px;"><br>`
+                        `<img src="/static/media/blog_photo/${userId}/${image}" widht="370" height="370" style="border-radius: 10px;"><br>`
                         )
                     }
                     $("#post").append(
