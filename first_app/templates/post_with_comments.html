@@ -25,7 +25,7 @@
 
     </div>
     
-    <div class="createComment">
+    <div class="createComment" style="visibility: visible;">
         <br>
         <textarea id="text" cols="55" rows="5" style="resize: none;" placeholder="Write a comment"></textarea><br>
         <input id="createComment" type="button" value="Create comment">
@@ -37,7 +37,8 @@
     <div id="comments">
         <p class="text">Comments</p>
     </div>
-    <p style="visibility: hidden; color: red; font-size: 17px; font-weight: 600; margin-left: 251px;" id="wrongPostId">Wrong post id</p>
+    <p class="error" style="visibility: hidden;" id="wrongPostId">Wrong post id</p>
+    <p ></p>
 </body>
 <script>
     let token = localStorage.getItem('token');
@@ -45,166 +46,163 @@
     let urlPathName = window.location.pathname;
     let splitUrlPathName = urlPathName.split("/");
     let postId = splitUrlPathName[2];
-    var userId = parseJWT(token)["user_id"];
-
-    if (isAuthenticated()) {
-        $.ajax({
-            url: `/api/v1/post-comments/post/${postId}`,
-            method: "GET",
-            headers: authHeaders(),
-            success: function(result){
-                let post = result.post;
-    
-                let userName = post["user_name"];
-                let title = post["title"];
-                let body = post["body"];
-                let created = post["created"];
-                let image;
-                let deleted;
-                if(post["file"] !== null){
-                        image = post["file"]["url"];
-                        deleted = post["file"]["deleted"];
-                    }    
-                $("#post").append(
-                        `
-                        <hr>
-                        <p class="text"> User name:${userName}<br>
-                        Title :${title}<br>
-                        Body :${body}<br>
-                        created:${created}</p>
-                        `);
-                        if (image){        
-                            $("#post").append(
-                            `<img src="/static/uploads/${image}" widht="370" height="370" style="border-radius: 10px;"><br>`
-                        )}
-                    
-                $.each(post["comments"], function(index){
-                    
-                    let comments = post["comments"];
-                    let userName = comments[index]["user_name"];
-                    let text = comments[index]["text"];
-                    let created = comments[index]["created"];
-                    let commentId = comments[index]["id"]
-                    let authorId = comments[index]["author_id"]
-
-                    $("#comments").append(
-                        `<hr>
-                        <p class="text">
-                        Author full name:${userName}<br>
-                        Text :${text}<br>
-                        created:${created}<br>
-                        </p>`);
-
-                    if(authorId == userId)
-                        $("#comments").append(
-                            `
-                            <div id = "updateButton${commentId}">
-                                <input class="button" id = "updateComment${commentId}" type="button" value="Update comment">
-                            </div>
-
-                            <div id ="newData${commentId}" hidden>
-                                
-                                <textarea id = "newText${commentId}" cols="55" rows="5" style="resize: none;" placeholder="Add comment">${text}</textarea><br>
-                                <input style="margin-top:7px;" class="button" type="button" value="Update" id="update${commentId}"><br>
-                                <input style="margin-top:15px;" class="button" type="button" id="delete${commentId}" name="delete" value="Delete"><br>
-
-                                <p hidden class = "text" id="confirmMessange${commentId}">You wonna delete comment?</p>
-                                
-                                <div id = "confirmButtons${commentId}" hidden>
-                                    <input class = "button" type="button" value="No" id="confirmNo${commentId}" name="confirmNo">
-                                    <input class = "button" type="button" value="Yes" id="confirmYes${commentId}" name="confirmYes">
-                                </div>
-
-                                <input style="margin-top:15px;" class = "button" type="button" hidden value="Cancel" id="cancel${commentId}">
-                            
-                                <div id="error${commentId}" hidden>                                                        
-                                    <p class="error" id="notText${commentId}">Not text</p>
-                                </div>
-                            </div>
-                            `
-                        );
-                        $(`#updateComment${commentId}`).on("click", function(){
-                            $(`#newData${commentId}`).attr("hidden", false);
-                            $(`#updateButton${commentId}`).attr("hidden", true);
-                        });
-
-                        $(`#update${commentId}`).on("click", function(){
-                            let updateText = $(`#newText${commentId}`).val();
-                            
-                            if(updateText===""){
-                                $(`#error${commentId}`).attr("hidden", false)
-                                return
-                            }
-                            $.ajax({
-                                url: `/api/v1/update-comment/update/${commentId}`,
-                                method: "PUT",
-                                dataType: "json",
-                                headers: authHeaders(),
-                                contentType: "application/json;  charset=utf-8",
-                                data: JSON.stringify({
-                                    text: updateText
-                                }),
-                                success: function(result){
-                                    window.location.reload();
-                                }
-                            });
-                        });
-
-                        $(`#delete${commentId}`).on("click", function(){
-                            $(`#confirmMessange${commentId}`).attr("hidden", false);
-                            $(`#confirmButtons${commentId}`).attr("hidden", false)
-                        });
-
-                        $(`#confirmYes${commentId}`).on("click", function(){
-                            $.ajax({
-                                url: `/api/v1/delete-comment/delete/${commentId}`,
-                                method: "DELETE",
-                                headers: authHeaders(),
-                                success: function(result){
-                                    window.location.reload();
-                                },
-                            }); 
-                        });
-
-                        $(`#confirmNo${commentId}`).on("click", function(){
-                            $(`#confirmMessange${commentId}`).attr("hidden", true);
-                            $(`#confirmButtons${commentId}`).attr("hidden", true);
-                        });
-
-                        $(`#cancel${commentId}`).on("click", function(){
-                            $(`#newData${commentId}`).attr("hidden", true);
-                            $(`#updateButton${commentId}`).attr("hidden", false);
-                        });
-                });
-                
-            },
-            error: function(result,request, status, error){
-                if(result.responseJSON.error){
-                    $("#wrongPostId").css("visibility", "visible")
-                }
-            }
-        });
-        $("#createComment").click(function(){
-            let text = $("#text").val();
-            
-            if(text===""){
-                $("#error").attr('hidden', false);
-                return
-            }
-            $.ajax({
-                url: `/api/v1/create-comment/post/${postId}`,
-                method: "POST",
-                dataType: "json",
-                headers: authHeaders(),
-                contentType: "application/json;  charset=utf-8",
-                data: JSON.stringify({
-                    text: text
-                }),
-                success: function(){
-                    window.location.reload()
-                }
-            });
-        });
+    if (isAuthenticated()){
+        var userId = parseJWT(token)["user_id"];
     }
+    $.ajax({
+        url: `/api/v1/post-comments/post/${postId}`,
+        method: "GET",
+        headers: authHeaders(),
+        success: function(result){
+            $("#createComment").css("visibility", "visible")
+            $("#comments").css("visibility", "visible")
+            let post = result.post;
+
+            let userName = post["user_name"];
+            let title = post["title"];
+            let body = post["body"];
+            let created = post["created"];
+            let image;
+            if(post["file"] !== null){
+                    image = post["file"]["url"];
+                }
+            $("#post").append(
+                    `
+                    <hr>
+                    <p class="text"> User name:${userName}<br>
+                    Title :${title}<br>
+                    Body :${body}<br>
+                    created:${created}</p>
+                    `);
+                    if (image){        
+                        $("#post").append(
+                        `<img src="${image}" widht="370" height="370" style="border-radius: 10px;"><br>`
+                    )}
+            $.each(post["comments"], function(index){
+                
+                let comments = post["comments"];
+                let userName = comments[index]["user_name"];
+                let text = comments[index]["text"];
+                let created = comments[index]["created"];
+                let commentId = comments[index]["id"]
+                let authorId = comments[index]["author_id"]
+                $("#comments").append(
+                    `<hr>
+                    <p class="text">
+                    Author full name:${userName}<br>
+                    Text :${text}<br>
+                    created:${created}<br>
+                    </p>`);
+                if(authorId == userId)
+                    $("#comments").append(
+                        `
+                        <div id = "updateButton${commentId}">
+                            <input class="button" id = "updateComment${commentId}" type="button" value="Update comment">
+                        </div>
+                        <div id ="newData${commentId}" hidden>
+                            
+                            <textarea id = "newText${commentId}" cols="55" rows="5" style="resize: none;" placeholder="Add comment">${text}</textarea><br>
+                            <input style="margin-top:7px;" class="button" type="button" value="Update" id="update${commentId}"><br>
+                            <input style="margin-top:15px;" class="button" type="button" id="delete${commentId}" name="delete" value="Delete"><br>
+                            <p hidden class = "text" id="confirmMessange${commentId}">You wonna delete comment?</p>
+                            
+                            <div id = "confirmButtons${commentId}" hidden>
+                                <input class = "button" type="button" value="No" id="confirmNo${commentId}" name="confirmNo">
+                                <input class = "button" type="button" value="Yes" id="confirmYes${commentId}" name="confirmYes">
+                            </div>
+                            <input style="margin-top:15px;" class = "button" type="button" hidden value="Cancel" id="cancel${commentId}">
+                        
+                            <div id="error${commentId}" hidden>                                                        
+                                <p class="error" id="notText${commentId}">Not text</p>
+                            </div>
+                        </div>
+                        `
+                    );
+                    $(`#updateComment${commentId}`).on("click", function(){
+                        $(`#newData${commentId}`).attr("hidden", false);
+                        $(`#updateButton${commentId}`).attr("hidden", true);
+                    });
+                    $(`#update${commentId}`).on("click", function(){
+                        let updateText = $(`#newText${commentId}`).val();
+                        
+                        if(updateText===""){
+                            $(`#error${commentId}`).attr("hidden", false)
+                            return
+                        }
+                        $.ajax({
+                            url: `/api/v1/update-comment/update/${commentId}`,
+                            method: "PUT",
+                            dataType: "json",
+                            headers: authHeaders(),
+                            contentType: "application/json;  charset=utf-8",
+                            data: JSON.stringify({
+                                text: updateText
+                            }),
+                            success: function(result){
+                                window.location.reload();
+                            }
+                        });
+                    });
+                    $(`#delete${commentId}`).on("click", function(){
+                        $(`#confirmMessange${commentId}`).attr("hidden", false);
+                        $(`#confirmButtons${commentId}`).attr("hidden", false)
+                    });
+                    $(`#confirmYes${commentId}`).on("click", function(){
+                        $.ajax({
+                            url: `/api/v1/delete-comment/delete/${commentId}`,
+                            method: "DELETE",
+                            headers: authHeaders(),
+                            success: function(result){
+                                window.location.reload();
+                            },
+                        }); 
+                    });
+                    $(`#confirmNo${commentId}`).on("click", function(){
+                        $(`#confirmMessange${commentId}`).attr("hidden", true);
+                        $(`#confirmButtons${commentId}`).attr("hidden", true);
+                    });
+                    
+                    $(`#cancel${commentId}`).on("click", function(){
+                        $(`#newData${commentId}`).attr("hidden", true);
+                        $(`#updateButton${commentId}`).attr("hidden", false);
+                    });
+            });
+            
+        },
+        error: function(result,request, status, error){
+            if(result.responseJSON.error){
+                $("#wrongPostId").css("visibility", "visible")
+                $(".createComment").css("visibility", "hidden")
+                $("#comments").css("visibility", "hidden")
+            }
+        }
+    });
+    $("#createComment").click(function(){
+        let text = $("#text").val();
+        if(text===""){
+            $("#error").attr('hidden', false);
+            return
+        }
+
+        if(!isAuthenticated()){
+            top.location.href = "/registrate"
+        }
+
+        $.ajax({
+            url: `/api/v1/create-comment/post/${postId}`,
+            method: "POST",
+            dataType: "json",
+            headers: authHeaders(),
+            contentType: "application/json;  charset=utf-8",
+            data: JSON.stringify({
+                text: text
+            }),
+            success: function(){
+                window.location.reload()
+            }
+        });
+        
+        });
+        
 </script>
 </html>

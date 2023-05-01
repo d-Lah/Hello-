@@ -4,9 +4,9 @@ import json
 from first_app.db import db
 from first_app.models import User
 from first_app.shems import UserSchema
-from first_app.config import SECRET_KEY
 from flask import g, request, Blueprint
 from .login_required import login_required
+from first_app.config import SECRET_KEY, BLOG_IMAGE_FOLODER
 from werkzeug.security import check_password_hash, generate_password_hash
 user_urls = Blueprint("sync",__name__)
 
@@ -31,16 +31,17 @@ def registrate_user_api():
     if exists:
         return{"error:":"Phone number already exists"}, 400
     
-    new_user = User()
-    new_user.phone_number = phone_number
-    new_user.first_name = first_name
-    new_user.second_name = second_name
-    new_user.password = generate_password_hash(password)
+    new_user = User(
+    phone_number = phone_number,
+    first_name = first_name,
+    second_name = second_name,
+    password = generate_password_hash(password)
+    )
 
     
     db.session.add(new_user)
     db.session.commit()
-    os.mkdir(f"static/media/blog_photo/{new_user.id}")    
+    os.mkdir(f"{BLOG_IMAGE_FOLODER}/{new_user.id}")
     return {}, 200
 
 def login_user(user):

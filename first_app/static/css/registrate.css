@@ -8,6 +8,13 @@ body, head{
 }
 a:visited, a:link{
     text-decoration: none;
+}
+
+a:active, a:hover{
+    text-decoration: none;
+}
+
+.navigateButton{
     padding: 5px 20px;
     text-align: center;
     display: inline-block;
@@ -15,11 +22,10 @@ a:visited, a:link{
     border-radius: 5px;
     background-color: rgb(0, 0, 0) ;
     margin-top: 3px;
-    margin-left: 5px;
+    margin-left: 25px;
 }
 
-a:active, a:hover{
-    text-decoration: none;
+.navigateButton:hover{
     color: black;
     background-color: white;
 }
@@ -71,6 +77,15 @@ a:active, a:hover{
     font-weight: 600;
     margin-left: 25px;
 }
-.navigateButton{
-    margin-left: 21px;
+p.text{
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin-left: 25px;
+}
+a.login{
+    font-weight: 600;
+}
+a.login:hover{
+    color: rgb(224, 251, 255);
 }

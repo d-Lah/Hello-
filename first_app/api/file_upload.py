@@ -1,23 +1,19 @@
-
 import os
 from uuid import uuid4
 from first_app.db import db
-from flask import request, Blueprint, g
 from first_app.models import FileUpload
 from werkzeug.utils import secure_filename
 from first_app.shems import FileUploadSchema
+from first_app.constans import FileStatuses, FileTypes
 from first_app.api.login_required import login_required
-from first_app.config import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
+from flask import request, Blueprint, g, send_from_directory
+from first_app.config import (
+    UPLOAD_FOLDER, 
+    MEDIA_FOLDER,
+    BLOG_IMAGE_FOLODER,
+    ALLOWED_EXTENSIONS) 
 
-class FileStatuses:
-     UPLOADED = "UPLOADED"
-     DELETED = "DELETED"
-
-class FileTypes:
-     BLOG_MAIN_PICTURE = "BLOG_MAIN_PICTURE"
-     USER_ACCOUNT_IMAGE = "USER_ACCOUNT_IMAGE"
-
-def validate_file(file):
+def validate_file(func):
     def _wrapper(*args, **kwargs):
         uploaded_file = request.files.get('file')
         
@@ -32,16 +28,23 @@ def validate_file(file):
         g.file_name = file_name
         g.file_ext = file_ext
 
-        return file(*args, **kwargs)
+        return func(*args, **kwargs)
     return _wrapper
 
-def _handel_file_upload(user_id, file_name, file_ext, file_type, saving_file):
+def _handel_file_upload(
+        user_id,file_name,
+        file_ext,
+        file_type,
+        saving_file):
     
     filename = f"{file_name}-{uuid4()}.{file_ext}"
-    saving_file.save(os.path.join(f"{UPLOAD_FOLDER}/{user_id}",
-                                                    secure_filename(filename)))
+    saving_file.save(os.path.join(
+        f"{UPLOAD_FOLDER}/{user_id}",
+        secure_filename(filename)))
+    
+    url = f"{BLOG_IMAGE_FOLODER}/{user_id}/{filename}"
     file = FileUpload(
-        url = filename,
+        url = url,
         author_id = user_id,
         file_type = file_type)
     
@@ -50,6 +53,7 @@ def _handel_file_upload(user_id, file_name, file_ext, file_type, saving_file):
     return file
 
 file_upload = Blueprint("file_upload",__name__)
+
 @file_upload.route("/api/v1/upload-file",
                    methods=["POST"])
 @login_required
@@ -69,7 +73,7 @@ def files_upload():
         FileTypes.BLOG_MAIN_PICTURE,
         uploaded_files)
 
-    return {"status":"Uploaded",
+    return {"status":FileStatuses.UPLOADED,
            "id": file.id}
 
 @file_upload.route("/api/v1/delete-file",
@@ -85,4 +89,12 @@ def file_delete():
     db.session.add(file)
     db.session.commit()
     
-    return {"status":"Deleted"}, 200
+    return {"status":FileStatuses.DELETED}, 200
+
+@file_upload.route("/media/<path:path>")
+def download_image(path):
+    return send_from_directory(MEDIA_FOLDER, path), 200
+
+@file_upload.route("/post/media/<path:path>")
+def download_post_image(path):
+    return send_from_directory(MEDIA_FOLDER, path), 200

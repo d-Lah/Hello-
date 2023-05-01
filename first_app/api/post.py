@@ -119,7 +119,6 @@ def update_post_api(post_id):
 
 @post_urls.route("/api/v1/post-comments/post/<int:post_id>",
                     methods=["GET"])
-@login_required
 def post_comments_api(post_id):
     
     post = Post.query.filter(Post.deleted == False,

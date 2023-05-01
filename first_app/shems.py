@@ -95,13 +95,6 @@ class PostSchema(ma.Schema):
     file = fields.Nested(FileUploadSchema)
     comments = fields.Nested(CommentSchema, many=True)
 
-    @validates("id")
-    def validate_id(self, id):
-        
-        post = Post.query.filter(Post.id==id).first()
-        if not post:
-            raise ValidationError({"error": "Wrong post id"})
-
     @validates("title")
     def validate_title(self, title):
         

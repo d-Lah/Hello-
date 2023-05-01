@@ -6,23 +6,15 @@ background-color: rgb(175, 175, 175);
 margin-top: 10px;
 margin-left: 25px;
 }
+
 a:visited, a:link{
 text-decoration: none;
-padding: 5px 20px;
-text-align: center;
-display: inline-block;
-color: aliceblue;
-border-radius: 5px;
-background-color: rgb(0, 0, 0) ;
-margin-top: 3px;
-margin-left: 5px;
 }
 
 a:active, a:hover{
 text-decoration: none;
-color: black;
-background-color: white;
 }
+
 #loginButton{
 text-decoration: none;
 padding: 3px 13px;
@@ -58,5 +50,29 @@ font-weight: 600;
 margin-left: 25px;
 }
 .navigateButton{
-margin-left: 21px;
+    padding: 5px 20px;
+    text-align: center;
+    display: inline-block;
+    color: aliceblue;
+    border-radius: 5px;
+    background-color: rgb(0, 0, 0) ;
+    margin-top: 3px;
+    margin-left: 5px;
+    margin-left: 25px;
+}
+.navigateButton:hover{
+    color: black;
+    background-color: white;
+}
+p.text{
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin-left: 25px;
+}
+a.registrate{
+    font-weight: 600;
+}
+a.registrate:hover{
+    color: rgb(224, 251, 255);
 }
