@@ -1,0 +1,103 @@
+body, head{
+    font-family: "Inconsolata", sans-serif;
+    background-color: rgb(175, 175, 175);
+}
+.newData{
+    margin-top: 10px;
+    margin-left: 25px;
+}
+a:visited, a:link{
+    text-decoration: none;
+    padding: 5px 20px;
+    text-align: center;
+    display: inline-block;
+    color: aliceblue;
+    border-radius: 5px;
+    background-color: rgb(0, 0, 0) ;
+    margin-top: 3px;
+    margin-left: 5px;
+}
+
+a:active, a:hover{
+    text-decoration: none;
+    color: black;
+    background-color: white;
+}
+.updatePostButton{
+    text-decoration: none;
+    padding: 3px 13px;
+    text-align: center;
+    display: inline-block;
+    color: aliceblue;
+    border-radius: 5px;
+    background-color: rgb(0, 0, 0) ;
+    margin-top: 9px;
+    margin-left: 25px;
+    border: none;
+}
+.updatePostButton:hover{
+    text-decoration: none;
+    color: black;
+    background-color: white;
+}
+#title{
+    padding: 7px 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+#body{
+    padding: 7px 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.error{
+    color: red;
+    font-size: 17px;
+    font-weight: 600;
+    margin-left: 25px;
+}
+.navigateButton{
+    margin-left: 21px;
+}
+#confirmMessange{
+    font-size: 17px;
+    margin-left: 25px;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+.confirmButtons{
+    margin-left: 25px;
+}
+#confirmNo{
+    text-decoration: none;
+    padding: 3px 13px;
+    text-align: center;
+    display: inline-block;
+    color: aliceblue;
+    border-radius: 5px;
+    background-color: rgb(0, 0, 0) ;
+    margin-top: 9px;
+    border: none;
+}
+#confirmYes{
+    text-decoration: none;
+    padding: 3px 13px;
+    text-align: center;
+    display: inline-block;
+    color: aliceblue;
+    border-radius: 5px;
+    background-color: rgb(0, 0, 0) ;
+    margin-top: 9px;
+    margin-left: 25px;
+    border: none;
+}
+#confirmNo:hover{
+    text-decoration: none;
+    color: black;
+    background-color: white;
+}
+#confirmYes:hover{
+    text-decoration: none;
+    color: black;
+    background-color: white;
+}

@@ -47,13 +47,6 @@ class CommentSchema(ma.Schema):
     created = fields.DateTime()
     text = fields.Str()
     deleted = fields.Bool()
-    
-    @validates("id")
-    def validate_id(self, id):
-        
-        comment = Comment.query.filter(Comment.id==id).first()
-        if not comment:
-            raise ValidationError({"error":"Wrong comment id"})
 
     @validates("post_id")
     def validate_post_id(self, post_id):
@@ -101,13 +94,6 @@ class PostSchema(ma.Schema):
     file_id = fields.Int()
     file = fields.Nested(FileUploadSchema)
     comments = fields.Nested(CommentSchema, many=True)
-
-    @validates("id")
-    def validate_id(self, id):
-        
-        post = Post.query.filter(Post.id==id).first()
-        if not post:
-            raise ValidationError({"error": "Wrong post id"})
 
     @validates("title")
     def validate_title(self, title):

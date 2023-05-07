@@ -1,0 +1,7 @@
+class FileStatuses:
+     UPLOADED = "UPLOADED"
+     DELETED = "DELETED"
+
+class FileTypes:
+     BLOG_MAIN_PICTURE = "BLOG_MAIN_PICTURE"
+     USER_ACCOUNT_IMAGE = "USER_ACCOUNT_IMAGE"

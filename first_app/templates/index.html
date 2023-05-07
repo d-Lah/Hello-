@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="/static/js/authentication.js"></script>
+
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+    <link rel="stylesheet" href="/static/css/index.css">
+
 <title>Page Title</title>
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
-<style>
-    
-    body, head{
-        font-family: "Inconsolata", sans-serif;
-        background-color: rgb(175, 175, 175);
-    }
-    
-</style>
 </head>
 <body>
 
@@ -57,13 +53,17 @@
         <div class="w3-bottomleft w3-padding-8">
             <p id="errorUserToken" style="visibility: hidden; color: crimson;">User doesn't login</p>    
         </div>
+        <div id="post">
+
+        </div>
+
 </body>
 
 <script type="text/javascript">
     let token = localStorage.getItem('token');
     let prefix = "Bearer";
     
-    if (token) {
+    if (isAuthenticated()) {
         $( "#loginPageLink").css( "visibility", "hidden" );
         $( "#registerPageLink").css( "visibility", "hidden" );
         $("#createPost").css("visibility","visible");
@@ -74,19 +74,63 @@
         $.ajax({
             url: "/api/v1/user-info",
             method: "GET",
-            headers: {"Authorization": `${prefix} ${token}`},
+            headers: authHeaders(),
             success: function(result){
                 $("#userFullName").text(result.info);
             },
             error: function(request, statusCode, error){
                 $("#errorUserToken").css("visibility", "visible");
             }
-        })
+        });
+        
+        $("#logOut").on("click", function(){
+            localStorage.clear();
+            location.reload();
+        });
     
-    $("#logOut").on("click", function(){
-        localStorage.clear();
-        location.reload();
-    });
-}
+    }
+        $.ajax({
+            url: "/api/v1/all-posts",
+            method: "GET",
+            headers: authHeaders(),
+            success: function(result){
+                let post = result.post;
+
+                $.each(post, function(index){
+                    
+                    let post_id = post[index]["id"];
+                    let userName = post[index]["user_name"];
+                    let userId = post[index]["author_id"]
+                    let title = post[index]["title"];
+                    let body = post[index]["body"];
+                    let created = post[index]["created"];
+                    let image;
+                    let deleted;
+                    if(post[index]["file"] !== null){
+                        image = post[index]["file"]["url"];
+                        deleted = post[index]["file"]["deleted"];
+                    }    
+                    $("#post").append(
+                        `
+                        <hr>
+                            <a href="/post/${post_id}"style="margin-top: 10px;">
+                            <p class="text">User name:${userName}<br>
+                            Title:${title}<br>
+                            Body:${body}<br>
+                            created:${created}</p>
+                            </a><br>
+                    `);
+                    if (image){        
+                        $("#post").append(
+                        `
+                        <a href="/post/${post_id}" style="margin-top: 10px;">
+                        <img src="${image}" widht="370" height="370" style="border-radius: 10px;"><br>
+                        </a>
+                        `);
+                    }
+                });
+            }
+        });
+    
 </script>
 </html>

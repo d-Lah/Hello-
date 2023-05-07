@@ -1,5 +1,5 @@
 /venv/
 */*.sqlite
 __pycache__
-uploads
+blog_images
 .DS_Store

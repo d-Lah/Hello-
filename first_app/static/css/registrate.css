@@ -1,0 +1,91 @@
+body, head{
+    font-family: "Inconsolata", sans-serif;
+    background-color: rgb(175, 175, 175);
+}
+.data{
+    margin-top: 10px;
+    margin-left: 25px;
+}
+a:visited, a:link{
+    text-decoration: none;
+}
+
+a:active, a:hover{
+    text-decoration: none;
+}
+
+.navigateButton{
+    padding: 5px 20px;
+    text-align: center;
+    display: inline-block;
+    color: aliceblue;
+    border-radius: 5px;
+    background-color: rgb(0, 0, 0) ;
+    margin-top: 3px;
+    margin-left: 25px;
+}
+
+.navigateButton:hover{
+    color: black;
+    background-color: white;
+}
+#registrateButton{
+    text-decoration: none;
+    padding: 3px 13px;
+    text-align: center;
+    display: inline-block;
+    color: aliceblue;
+    border-radius: 5px;
+    background-color: rgb(0, 0, 0) ;
+    margin-top: 9px;
+    margin-left: 25px;
+    border: none;
+}
+#registrateButton:hover{
+    text-decoration: none;
+    color: black;
+    background-color: white;
+}
+#firstName{
+    padding: 7px 15px;
+    margin-top: 6px;
+    margin-bottom: 10px;
+}
+#secondName{
+    padding: 7px 15px;
+    margin-top: 6px;
+    margin-bottom: 10px;
+}
+#phoneNumber{
+    padding: 7px 15px;
+    margin-top: 6px;
+    margin-bottom: 10px;
+}
+#password{
+    padding: 7px 15px;
+    margin-top: 6px;
+    margin-bottom: 10px;
+}
+#repeatingPassword{
+    padding: 7px 15px;
+    margin-top: 6px;
+    margin-bottom: 10px;
+}
+.error{
+    color: red;
+    font-size: 17px;
+    font-weight: 600;
+    margin-left: 25px;
+}
+p.text{
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin-left: 25px;
+}
+a.login{
+    font-weight: 600;
+}
+a.login:hover{
+    color: rgb(224, 251, 255);
+}

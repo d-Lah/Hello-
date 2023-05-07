@@ -34,11 +34,14 @@ def create_comment_api(post_id):
     if error_text: 
         return error_text, 400
     
-    new_comment = Comment(author_id,
-                    comments_post_id,
-                    created,
-                    text,
-                    user_name=author_name)
+    new_comment = Comment()
+    
+    new_comment.author_id = author_id
+    new_comment.post_id = comments_post_id
+    new_comment.created = created
+    new_comment.text = text
+    new_comment.user_name = author_name
+    
     db.session.add(new_comment)
     db.session.commit()    
     
@@ -48,15 +51,14 @@ def create_comment_api(post_id):
                     methods=["DELETE"])
 @login_required
 def delete_comment_post_api(comment_id):
-
     author_id = g.user_id
 
-    error = CommentSchema().validate({"id":comment_id, "author_id":author_id})
-    if error:
-        return{"error":"Wrong comment id"}, 404
+    comment = Comment.query.filter(
+        Comment.id==comment_id,
+        Comment.author_id==author_id).first()
 
-    comment = Comment.query.filter(Comment.id==comment_id,
-                                   Comment.author_id==author_id).first()
+    if not comment:
+        return{"error":"Wrong post id"},404
     
     comment.deleted = 1
     db.session.add(comment)
@@ -73,12 +75,10 @@ def update_comment_post_api(comment_id):
     update_datatime = datetime.datetime.now()
     author_id = g.user_id
     
-    error = CommentSchema().validate({"id": comment_id})
-    if error:
-        return{"error":"Wrong comment or author_id"},404
-    
     comment = Comment.query.filter(Comment.id == comment_id,
                                    Comment.author_id == author_id).first()
+    if not comment:
+        return{"error":"Wrong post id"},404
     
     comment.text = update_text
     comment.datatime = update_datatime
